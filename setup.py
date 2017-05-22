@@ -10,5 +10,5 @@ setup(
     install_requires=[
         'flask','flask-sqlalchemy',
     ],
-    scripts=['bin/myproject-shell']
+    scripts=['bin/myproject-shell','bin/postgres-shell']
 )
