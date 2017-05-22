@@ -1,0 +1,5 @@
+# compiled python modules
+*.pyc
+
+# python egg metadata
+/*.egg-info
