@@ -1,8 +1,8 @@
 from myproject import app
-from database import db_session, metadata 
+from database import db_session, metadata
 from sqlalchemy import Table, Column, Integer, String
 from sqlalchemy.orm import mapper, clear_mappers
-from flask import render_template, request
+from flask import render_template, request, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, flash, jsonify
 
@@ -22,10 +22,16 @@ def shutdown_session(exception=None):
     db_session.remove()
 
 @app.route("/")
-def hello():
-    return "<h1 style='color:blue'>Hello There!</h1>"
+def index():
+    return render_template('index.html')
 
+@app.route("/track")
+def track():
+    return render_template('track.html')
 
+@app.route("/charts")
+def charts():
+    return render_template('charts.html')
 
 @app.route('/track/<int:device_id>')
 def show_all(device_id):
@@ -64,4 +70,6 @@ def new():
         return ('added successfully')
   return ('Yooo')
 
-
+@app.route('/<path:path>')
+def send_static(path):
+    return send_from_directory('static',path)
