@@ -9,3 +9,7 @@
 * Then type in your terminal "$ flask run" to start the server 
 
 This will start your flask server without nginx or apache. It will by default create two tables for two devices named as device1 and device2
+You will have to export these variables (FLASK_APP and FLASK_DEBUG) everytime before you run the server. 
+If you want to export these variables permanently then type in your terminal "$ nano /etc/environment" .
+And add lines "export FLASK_APP=myproject" and "export FLASK_DEBUG=true" in /etc/environment file.
+Then Refresh your environment variables by typing "$ source /etc/environment" in your terminal. Now you can run your server without exporting variables everytime.  
