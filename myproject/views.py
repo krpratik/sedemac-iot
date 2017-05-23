@@ -34,7 +34,11 @@ def show_all(device_id):
   clear_mappers();
   mapper(Device, devices)
   data = Device.query.all();
-  return str(data)
+  value_list=[]
+  for datas in data :
+    value_list.append({'erpm': datas.erpm , 'engine_load': datas.engine_load}) 
+  print(value_list)
+  return jsonify(results=value_list)
   #return render_template('track.html', jsonify(value = data), len(data))
 
 
