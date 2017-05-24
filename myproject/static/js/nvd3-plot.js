@@ -141,7 +141,7 @@ nv.addGraph(function() {
   chart_erpm_engine_load.xAxis.tickFormat(d3.format('.02f'));
   chart_erpm_engine_load.yAxis.tickFormat(d3.format('.02f'));
 
-  $.get("http://139.59.38.17/data/1/chart", function(data){
+  $.get(window.location.protocol + "//" + window.location.host + "/data/1/chart", function(data){
     d3.select('#chart-erpm-engine-load')
         .datum(data)
         .call(chart_erpm_engine_load);
