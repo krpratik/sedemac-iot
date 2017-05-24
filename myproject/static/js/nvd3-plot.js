@@ -141,11 +141,11 @@ nv.addGraph(function() {
   chart_erpm_engine_load.xAxis.tickFormat(d3.format('.02f'));
   chart_erpm_engine_load.yAxis.tickFormat(d3.format('.02f'));
 
-  var myData =  httpGet('http://127.0.0.1:5000/data/1/chart');
-  alert(myData);
-  d3.select('#chart-erpm-engine-load')
-      .datum(myData)
-      .call(chart_erpm_engine_load);
+  $.get("http://127.0.0.1:5000/data/1/chart", function(data){
+    d3.select('#chart-erpm-engine-load')
+        .datum(data)
+        .call(chart_erpm_engine_load);
+  });
 
   nv.utils.windowResize(chart_erpm_engine_load.update);
 

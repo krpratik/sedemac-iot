@@ -1,4 +1,5 @@
-google.charts.load('current', { 'packages': ['map'] });
+var mapAPIKey = 'AIzaSyC3kFCWlzaXmAQEdeYglMHDEFW38TTJeng';
+google.charts.load('current', { 'packages': ['map'], mapsApiKey: mapAPIKey });
 google.charts.setOnLoadCallback(drawMap);
 
 function drawMap() {

@@ -5,7 +5,7 @@ from database import db_session, metadata
 from sqlalchemy import Table, Column, Integer, String
 from sqlalchemy.orm import mapper, clear_mappers
 from flask_sqlalchemy import SQLAlchemy
-
+from myproject.data import Device, deviceNumbers
 ##### FOR SAVING DATA FROM THE DEVICE ######
 @app.route('/new', methods = ['POST'])
 def new():

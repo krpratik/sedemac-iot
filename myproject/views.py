@@ -3,7 +3,6 @@ from flask import Flask, flash, jsonify
 from flask import render_template, request, send_from_directory, json
 
 # Here n is the number of devices
-deviceNumbers = 2 ;
 
 @app.route("/")
 def index():

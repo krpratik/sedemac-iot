@@ -6,6 +6,7 @@ from sqlalchemy import Table, Column, Integer, String
 from sqlalchemy.orm import mapper, clear_mappers
 from flask_sqlalchemy import SQLAlchemy
 
+deviceNumbers = 2 ;
 class Device(object):
   query = db_session.query_property()
   def __init__(self, erpm, engine_load):
@@ -25,6 +26,6 @@ def show_all(device_id):
   value_list=[{'key':1,'values':[]}]
 
   for datas in data :
-    value_list[0]['values'].append({'x': datas.erpm , 'y': datas.engine_load, 'size':0.5, 'shape':'circle'})
+    value_list[0]['values'].append({'x': datas.erpm , 'y': int(datas.engine_load), 'size':0.5, 'shape':'circle'})
   clear_mappers();
   return  jsonify(value_list)
