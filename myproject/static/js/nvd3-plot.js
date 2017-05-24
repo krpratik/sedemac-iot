@@ -44,7 +44,7 @@ nv.addGraph(function() {
       .call(chart);          //Finally, render the chart!
 
   //Update the chart when window resizes.
-  nv.utils.windowResize(function() { chart.update() });
+  nv.utils.windowResize(function() { chart.update });
   return chart;
 });
 /**************************************
@@ -125,4 +125,70 @@ function exampleData() {
     }
   ]
 
+}
+nv.addGraph(function() {
+  var chart_erpm_engine_load = nv.models.scatterChart()
+                .showDistX(true)    //showDist, when true, will display those little distribution lines on the axis.
+                .showDistY(true)
+                .color(d3.scale.category10().range());
+
+  //Configure how the tooltip looks.
+  chart_erpm_engine_load.tooltip.contentGenerator(function(key) {
+      return 'x: ' + key.point.x + '<br>y: '+ key.point.y;
+  });
+
+  //Axis settings
+  chart_erpm_engine_load.xAxis.tickFormat(d3.format('.02f'));
+  chart_erpm_engine_load.yAxis.tickFormat(d3.format('.02f'));
+
+  var myData =  httpGet('http://127.0.0.1:5000/data/1/chart');
+  alert(myData);
+  d3.select('#chart-erpm-engine-load')
+      .datum(myData)
+      .call(chart_erpm_engine_load);
+
+  nv.utils.windowResize(chart_erpm_engine_load.update);
+
+  return chart_erpm_engine_load;
+});
+
+function randomData(groups, points) { //# groups,# points per group
+  var data = [],
+      shapes = ['circle', 'cross', 'triangle-up', 'triangle-down', 'diamond', 'square'],
+      random = d3.random.normal();
+
+  for (i = 0; i < groups; i++) {
+    data.push({
+      key: 'Group ' + i,
+      values: []
+    });
+
+    for (j = 0; j < points; j++) {
+      data[i].values.push({
+        x: random()
+      , y: random()
+      , size: Math.random()   //Configure the size of each scatter point
+      , shape: (Math.random() > 0.95) ? shapes[j % 6] : "circle"  //Configure the shape of each scatter point.
+      });
+    }
+  }
+
+  return data;
+}
+function httpGetAsyncChart(theUrl, callback)
+{
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+            callback(xmlHttp.responseText);
+    }
+    xmlHttp.open("GET", theUrl, true); // true for asynchronous
+    xmlHttp.send(null);
+}
+function httpGet(theUrl)
+{
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+    xmlHttp.send( null );
+    return JSON.parse(xmlHttp.responseText);
 }

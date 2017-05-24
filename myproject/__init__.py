@@ -1,7 +1,9 @@
 from flask import Flask
-app = Flask(__name__)
+app = Flask(__name__, static_folder='/static')
 
 import myproject.views
+import myproject.record
+import myproject.data
 
 
 if __name__ == "__main__":
