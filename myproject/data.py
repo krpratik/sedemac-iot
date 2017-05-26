@@ -9,9 +9,15 @@ from flask_sqlalchemy import SQLAlchemy
 deviceNumbers = 2 ;
 class Device(object):
   query = db_session.query_property()
-  def __init__(self, erpm, engine_load):
+  def __init__(self, erpm, engine_load,latitude,longitude,vehicle_speed,data_date,data_time):
     self.erpm = erpm
     self.engine_load = engine_load
+    self.latitude = latitude
+    self.longitude = longitude
+    self.vehicle_speed = vehicle_speed
+    self.data_date = data_date
+    self.data_time = data_time
+
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):
