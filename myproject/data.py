@@ -32,17 +32,17 @@ def show_all(device_id, chart_id):
   if (chart_id == 1) :
 
     data = Device.query.all();
-    value_list=[{'key':1,'values':[]}]
+    value_list=[['erpm','engine_load']]
     for datas in data :
-      value_list[0]['values'].append({'x': datas.erpm , 'y': int(datas.engine_load), 'size':0.5, 'shape':'circle'})
+      value_list.append([datas.erpm, datas.engine_load])
     clear_mappers();
     return  jsonify(value_list)
 
   elif (chart_id == 2):
     data = Device.query.with_entities(Device.vehicle_speed)
-    value_list = [['s','value']]
+    value_list = [['speed','value']]
     for datas in data :
-      value_list.append(['s',datas.vehicle_speed])
+      value_list.append(['speed',datas.vehicle_speed])
     clear_mappers();
     return jsonify(value_list)
 
