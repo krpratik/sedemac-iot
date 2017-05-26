@@ -23,15 +23,26 @@ class Device(object):
 def shutdown_session(exception=None):
     db_session.remove()
 
-@app.route('/data/<int:device_id>/chart')
-def show_all(device_id):
+@app.route('/data/<int:device_id>/chart/<int:chart_id>')
+def show_all(device_id, chart_id):
   devices = Table("device"+str(device_id), metadata,autoload= True)
   clear_mappers();
   mapper(Device, devices)
-  data = Device.query.all();
-  value_list=[{'key':1,'values':[]}]
 
-  for datas in data :
-    value_list[0]['values'].append({'x': datas.erpm , 'y': int(datas.engine_load), 'size':0.5, 'shape':'circle'})
-  clear_mappers();
-  return  jsonify(value_list)
+  if (chart_id == 1) :
+
+    data = Device.query.all();
+    value_list=[{'key':1,'values':[]}]
+    for datas in data :
+      value_list[0]['values'].append({'x': datas.erpm , 'y': int(datas.engine_load), 'size':0.5, 'shape':'circle'})
+    clear_mappers();
+    return  jsonify(value_list)
+
+  elif (chart_id == 2):
+    data = Device.query.with_entities(Device.vehicle_speed)
+    value_list = [['s','value']]
+    for datas in data :
+      value_list.append(['s',datas.vehicle_speed])
+    clear_mappers();
+    return jsonify(value_list)
+
