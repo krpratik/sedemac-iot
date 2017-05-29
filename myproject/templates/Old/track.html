@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="SEDEMAC">
+  <meta name="author" content="kanthed">
+
+    <title>Sedemac Hook</title>
+
+    <!-- Google Maps-->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+    <!-- Plot on Gmap -->
+    <script type="text/javascript" src="js/gmap.js"></script>
+
+    <!-- jQuery -->
+    <script src="js/jquery.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="css/sb-admin.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=BenchNine" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Love%20Ya%20Like%20A%20Sister" rel="stylesheet" type="text/css">
+    <!-- NVD3 Libs -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.2/nv.d3.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.16/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.2/nv.d3.min.js"></script>
+
+    <!-- NVD3 Graph Code -->
+    <script src = "js/nvd3-plot.js"></script>
+
+    <!-- Toggle Switch -->
+    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <!-- Navigation -->
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <h4 class="navbar-brand"><i class="fa fa-fw fa-table"></i> SEDEMAC <b class="hook"> &nbsp;hook</b></h4>
+            </div>
+            <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
+            <div class="collapse navbar-collapse navbar-ex1-collapse">
+                <ul class="nav navbar-nav side-nav">
+                    <li>
+                        <a href="/"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
+                    </li>
+                    <li>
+                        <a href="/charts"><i class="fa fa-fw fa-bar-chart-o"></i> Charts</a>
+                    </li>
+                    <li class="active">
+                        <a href="/track"><i class="fa fa-fw fa-edit"></i> Track</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </nav>
+
+        <div id="page-wrapper">
+
+            <div class="container-fluid">
+
+                <!-- Page Heading -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1 class="page-header">
+                            Track
+                        </h1>
+                        <ol class="breadcrumb">
+                            <li>
+                                <i class="fa fa-dashboard"></i>  <a href="index.html">Dashboard</a>
+                            </li>
+                            <li class="active">
+                                <i class="fa fa-edit"></i> Track
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <!-- /.row -->
+
+                <!-- Track Form -->
+                <div class="row" style="padding-bottom:10px">
+                  <div class="col-lg-12">
+                    <div class="track">
+                      <form role="form" action="">
+                        <div class="" from-group>
+                          <div class="row">
+                            <div class="col-lg-4">
+                              <input class="form-control" placeholder="Vechile ID"></input>
+                            </div>
+                            <div class="col-lg-4">
+                              <input class="form-control" placeholder="Vechile Key" type="password"></input>
+                            </div>
+                            <div class="col-lg-4">
+                              <input class="form-control btn-primary"type="submit" value="Track">
+                            </div>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+                <!-- /.row -->
+
+                <!-- Device Details -->
+                <div class="row" style="padding-bottom:10px; padding-top:10px">
+
+                  <!-- Avg Stats -->
+                  <div class="col-lg-6">
+                    <div class="ind-stats">
+                      <div class="panel panel-primary">
+                        <div class="panel-heading">
+                          <h3 class="panel-title"><i class="fa fa-fw fa-table"></i> Vechile Statistics</h3>
+                        </div>
+                        <div class="panel-body">
+                          <div class="table-responsive">
+                            <table class="table table-bordered table-hover table-striped">
+                              <tbody>
+                                <tr>
+                                  <td>Vehicle ID</td>
+                                  <td>125004</td>
+                                </tr>
+                                <tr>
+                                  <td>Description</td>
+                                  <td>Activa</td>
+                                </tr>
+                                <tr>
+                                  <td>Total Distance Traveled</td>
+                                  <td>2322.39 km</td>
+                                </tr>
+                                <tr>
+                                  <td>Avgerage Speed</td>
+                                  <td>24.53 km/hr</td>
+                                </tr>
+                                <tr>
+                                  <td>Avgerage Distance between two starts</td>
+                                  <td>9.33 km</td>
+                                </tr>
+                                <tr>
+                                  <td>Avgerage Time between two starts</td>
+                                  <td>49.23 min</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- /.col -->
+
+                  <!-- Tool Box -->
+                  <div class="col-lg-6">
+                    <div class="tool-box">
+                      <div class="panel panel-primary">
+                        <div class="panel-heading">
+                          <h3 class="panel-title"><i class="fa fa-fw fa-wrench"></i> Tool Box</h3>
+                        </div>
+                        <div class="panel-body">
+                          <div class="row">
+                            <div class="col-lg-6">
+                              <div class="engine-switch">
+                                <div class="panel panel-primary">
+                                  <div class="panel-heading">
+                                    <h4 class="panel-title"> Engine</h3>
+                                  </div>
+                                  <div class="panel-body">
+                                    <div class="toggle-switch">
+                                      <label class="checkbox-inline">
+                                        <input type="checkbox" checked data-toggle="toggle">
+                                      </label>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-lg-6">
+                              <div class="fuel-switch">
+                                <div class="panel panel-primary">
+                                  <div class="panel-heading">
+                                    <h4 class="panel-title"> Fuel</h3>
+                                  </div>
+                                  <div class="panel-body">
+                                    <div class="toggle-switch">
+                                      <label class="checkbox-inline">
+                                        <input type="checkbox" checked data-toggle="toggle">
+                                      </label>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-lg-6">
+                              <div class="wiper-switch">
+                                <div class="panel panel-primary">
+                                  <div class="panel-heading">
+                                    <h4 class="panel-title"> Wiper</h3>
+                                  </div>
+                                  <div class="panel-body">
+                                    <div class="toggle-switch">
+                                      <label class="checkbox-inline">
+                                        <input type="checkbox" checked data-toggle="toggle">
+                                      </label>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-lg-6">
+                              <div class="door-lock-switch">
+                                <div class="panel panel-primary">
+                                  <div class="panel-heading">
+                                    <h4 class="panel-title"> Door Lock</h3>
+                                  </div>
+                                  <div class="panel-body">
+                                    <div class="toggle-switch">
+                                      <label class="checkbox-inline">
+                                        <input type="checkbox" checked data-toggle="toggle">
+                                      </label>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- /.col -->
+
+                </div>
+                <!-- /.row -->
+
+                <!-- Device Charts-->
+                <div class="row" style="padding-botton:10px; padding-top:10px">
+                  <div class="charts">
+                    <!-- Distacne v/s Time Chart -->
+                    <div class="col-lg-6">
+                      <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><i class="fa fa-bar-chart-o"></i> Distance v/s Time</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="chart">
+                              <svg id="chart-dis-time" style="height:400px;"></svg>
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- /.col -->
+
+                    <!-- %Time vs Speed-->
+                    <div class="col-lg-6">
+                      <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><i class="fa fa-bar-chart-o"></i> Distance v/s Time</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="chart">
+                              <svg id="chart-per-time-speed" style="height:400px;"></svg>
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- /.col -->
+                  </div>
+                </div>
+                <!-- /.row -->
+
+                <!-- Device Charts-->
+                <div class="row" style="padding-botton:10px; padding-top:10px">
+                  <div class="charts">
+                    <!-- Fake chart -->
+                    <div class="col-lg-6">
+                      <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><i class="fa fa-bar-chart-o"></i> Fake data vs Fake data</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="chart">
+                              <svg id="chart-fake" style="height:400px;"></svg>
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- /.col -->
+
+                    <!-- Erpm vs Engine Load-->
+                    <div class="col-lg-6">
+                      <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><i class="fa fa-bar-chart-o"></i> ERMP v/s Engine Load</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="chart">
+                              <svg id="chart-erpm-engine-load" style="height:400px;"></svg>
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- /.col -->
+                  </div>
+                </div>
+                <!-- /.row -->
+
+                <!-- Map -->
+                <div class="row">
+                    <div class="col-lg-12">
+                      <div class="panel panel-primary">
+                        <div class="panel-heading">
+                          <h3 class="panel-title"><i class="fa fa-fw fa-desktop"></i> Location Activity</h3>
+                        </div>
+                        <div class="panel-body">
+                          <div id="chart_div"></div>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+                <!-- /.row -->
+
+            </div>
+            <!-- /.container-fluid -->
+
+        </div>
+        <!-- /#page-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+
+
+</body>
+
+</html>
