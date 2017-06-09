@@ -1,3 +1,4 @@
+
 from myproject import app
 from flask import Flask, flash, jsonify
 from flask import render_template, request, send_from_directory, json
@@ -5,6 +6,7 @@ from database import db_session, metadata
 from sqlalchemy import Table, Column, Integer, String
 from sqlalchemy.orm import mapper, clear_mappers
 from flask_sqlalchemy import SQLAlchemy
+import json
 
 deviceNumbers = 2 ;
 class Device(object):
@@ -44,5 +46,6 @@ def show_all(device_id, chart_id):
     for datas in data :
       value_list.append(['speed',datas.vehicle_speed])
     clear_mappers();
+    #return json.dumps(value_list)
     return jsonify(value_list)
 
