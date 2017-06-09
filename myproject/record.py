@@ -10,8 +10,8 @@ from myproject.data import Device, deviceNumbers
 @app.route('/new', methods = ['POST'])
 def new():
   if request.method == 'POST' :
-    if not(request.form['erpm'] and request.form['engine_load'] and request.form['table_name'] and (request.form['table_name']>0) ) :
-      print ("Reached")
+    print(request.form);
+    if not(request.form['erpm'] and request.form['runtime_crank'] and request.form['engine_load'] and request.form['table_name'] and (request.form['table_name']>0) ) :
       #flash('Please enter all the fields', 'error')
       return ("Empty attempt")
     else:
@@ -20,6 +20,7 @@ def new():
       else :
         erpm = request.form['erpm']
         engine_load = request.form['engine_load']
+        runtime_crank = request.form['runtime_crank']
         latitude = request.form['latitude']
         longitude = request.form['longitude']
         vehicle_speed = request.form['vehicle_speed']
@@ -46,7 +47,7 @@ def new():
         devices = Table("device"+table_name, metadata,autoload= True
         )
         mapper(Device, devices)
-        device = Device(erpm,engine_load,latitude,longitude,vehicle_speed,final_date,final_time)
+        device = Device(erpm,engine_load,runtime_crank,latitude,longitude,vehicle_speed,final_date,final_time)
         db_session.add(device)
         db_session.commit()
         clear_mappers();

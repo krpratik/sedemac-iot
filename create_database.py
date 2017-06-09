@@ -18,6 +18,7 @@ for device in range(1,deviceNumbers+1) :
     id = db.Column(db.Integer, primary_key = True)
     erpm = db.Column(db.Integer)
     engine_load = db.Column(db.Integer)
+    runtime_crank = db.Column(db.Integer)
     latitude = db.Column(db.Numeric)
     longitude = db.Column(db.Numeric)
     vehicle_speed = db.Column(db.Integer)
@@ -25,9 +26,10 @@ for device in range(1,deviceNumbers+1) :
     data_time = db.Column(db.Time)
 
     
-    def __init__(self, erpm, engine_load, latitude, longitude, vehicle_speed, data_date, data_time):
+    def __init__(self, erpm, engine_load, runtime_crank, latitude, longitude, vehicle_speed, data_date, data_time):
       self.erpm = erpm
       self.engine_load = engine_load
+      self.runtime_crank = runtime_crank
       self.latitude = latitude
       self.longitude = longitude
       self.vehicle_speed = vehicle_speed
