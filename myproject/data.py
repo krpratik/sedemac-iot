@@ -10,10 +10,11 @@ import json
 deviceNumbers = 2 ;
 class Device(object):
   query = db_session.query_property()
-  def __init__(self, erpm, engine_load, runtime_crank, latitude,longitude,vehicle_speed,data_date,data_time):
+  def __init__(self, erpm, engine_load, runtime_crank, throttle_position, latitude, longitude, vehicle_speed, data_date, data_time):
     self.erpm = erpm
     self.engine_load = engine_load
     self.runtime_crank = runtime_crank
+    self.throttle_position = throttle_position
     self.latitude = latitude
     self.longitude = longitude
     self.vehicle_speed = vehicle_speed

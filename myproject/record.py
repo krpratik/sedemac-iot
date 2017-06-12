@@ -21,6 +21,7 @@ def new():
         erpm = request.form['erpm']
         engine_load = request.form['engine_load']
         runtime_crank = request.form['runtime_crank']
+        throttle_position = request.form['throttle_position']
         latitude = request.form['latitude']
         longitude = request.form['longitude']
         vehicle_speed = request.form['vehicle_speed']
@@ -47,7 +48,7 @@ def new():
         devices = Table("device"+table_name, metadata,autoload= True
         )
         mapper(Device, devices)
-        device = Device(erpm,engine_load,runtime_crank,latitude,longitude,vehicle_speed,final_date,final_time)
+        device = Device(erpm,engine_load,runtime_crank,throttle_position, latitude,longitude,vehicle_speed,final_date,final_time)
         db_session.add(device)
         db_session.commit()
         clear_mappers();
