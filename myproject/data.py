@@ -7,8 +7,14 @@ from sqlalchemy import Table, Column, Integer, String
 from sqlalchemy.orm import mapper, clear_mappers
 from flask_sqlalchemy import SQLAlchemy
 import json
+FMT = "%H:%M:%S"
 
 deviceNumbers = 2 ;
+trip_check_1 = {'table_name': 1, 'trip_update': False, 'last_runtime_crank': -1, 'last_trip_time': '00:00:00', 'last_trip_date':'0000-00-00', 'count':0, 'avg_speed':0, 'avg_erpm':0, 'avg_engine_load':0, 'avg_throttle_position':0, 'trip_start_time':0};
+trip_check_2 = {'table_name': 2, 'trip_update': False, 'last_runtime_crank': -1, 'last_trip_time': '00:00:00', 'last_trip_date':'0000-00-00', 'count':0, 'avg_speed':0, 'avg_erpm':0, 'avg_engine_load':0, 'avg_throttle_position':0, 'trip_start_time':0};
+
+list_trip_check=[trip_check_1,trip_check_2];
+
 class Device(object):
   query = db_session.query_property()
   def __init__(self, erpm, engine_load, runtime_crank, throttle_position, latitude, longitude, vehicle_speed, data_date, data_time):
@@ -21,6 +27,18 @@ class Device(object):
     self.vehicle_speed = vehicle_speed
     self.data_date = data_date
     self.data_time = data_time
+
+
+class Device_derived(object) :
+  def __init__(self, trip_duration, trip_distance, trip_avg_speed, trip_avg_erpm, trip_avg_engine_load, trip_avg_throttle_position, trip_date, trip_end_time):
+    self.trip_duration = trip_duration
+    self.trip_distance = trip_distance
+    self.trip_avg_speed = trip_avg_speed
+    self.trip_avg_erpm = trip_avg_erpm
+    self.trip_avg_engine_load = trip_avg_engine_load
+    self.trip_avg_throttle_position = trip_avg_throttle_position
+    self.trip_date = trip_date
+    self.trip_end_time = trip_end_time
 
 
 @app.teardown_appcontext
@@ -50,4 +68,3 @@ def show_all(device_id, chart_id):
     clear_mappers();
     #return json.dumps(value_list)
     return jsonify(value_list)
-
