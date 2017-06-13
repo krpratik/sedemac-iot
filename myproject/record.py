@@ -49,11 +49,6 @@ def new():
         )
         mapper(Device, devices)
 
-        devices_derived = Table("device_derived"+table_name, metadata,autoload=True
-        )
-        mapper(Device_derived, devices_derived)
-
-
         device = Device(erpm,engine_load,runtime_crank,throttle_position, latitude,longitude,vehicle_speed,final_date,final_time)
         table_name = int(table_name)
         runtime_crank = int(runtime_crank)
@@ -61,11 +56,13 @@ def new():
         engine_load = int(engine_load)
         throttle_position = int(throttle_position)
         vehicle_speed = int(vehicle_speed)
-        print(list_trip_check[table_name-1]['last_runtime_crank'] == -1)
-
+        
         if ((list_trip_check[table_name-1]['last_runtime_crank'] > runtime_crank) or (runtime_crank == 0) or (list_trip_check[table_name - 1]['last_runtime_crank'] == -1)):
             
             if (list_trip_check[table_name-1]['trip_update']) :
+                devices_derived = Table("device_derived"+str(table_name), metadata,autoload=True
+                )
+                mapper(Device_derived, devices_derived)
                 #duration = datetime.strptime(list_trip_check[table_name-1]['trip_start_time'], FMT) - datetime.strptime(list_trip_check[table_name-1]['last_trip_time'], FMT)
                 duration = timedelta(seconds = list_trip_check[table_name-1]['last_runtime_crank'])
                 trip_duration = str(duration)
