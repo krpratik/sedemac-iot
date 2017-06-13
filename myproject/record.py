@@ -50,6 +50,10 @@ def new():
         mapper(Device, devices)
 
         device = Device(erpm,engine_load,runtime_crank,throttle_position, latitude,longitude,vehicle_speed,final_date,final_time)
+        db_session.add(device)
+        db_session.commit()
+        clear_mappers();
+
         table_name = int(table_name)
         runtime_crank = int(runtime_crank)
         erpm = int(erpm)
@@ -60,6 +64,7 @@ def new():
         if ((list_trip_check[table_name-1]['last_runtime_crank'] > runtime_crank) or (runtime_crank == 0) or (list_trip_check[table_name - 1]['last_runtime_crank'] == -1)):
             
             if (list_trip_check[table_name-1]['trip_update']) :
+                clear_mappers();
                 devices_derived = Table("device_derived"+str(table_name), metadata,autoload=True
                 )
                 mapper(Device_derived, devices_derived)
@@ -75,6 +80,8 @@ def new():
                 trip_end_time = list_trip_check[table_name-1]['last_trip_time']
                 device_derived = Device_derived(trip_duration, trip_distance, trip_avg_speed, trip_avg_erpm, trip_avg_engine_load, trip_avg_throttle_position, trip_date, trip_end_time)
                 db_session.add(device_derived)
+                db_session.commit()
+                clear_mappers();
 
             list_trip_check[table_name-1]['trip_update'] = True
 
@@ -98,9 +105,7 @@ def new():
         list_trip_check[table_name-1]['last_runtime_crank'] = runtime_crank
         
 
-        db_session.add(device)
-        db_session.commit()
-        clear_mappers();
+
         return ('added successfully')
   return ('Yooo')
 
