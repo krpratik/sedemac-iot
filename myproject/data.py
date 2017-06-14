@@ -8,6 +8,7 @@ from sqlalchemy.orm import mapper, clear_mappers
 from flask_sqlalchemy import SQLAlchemy
 import json
 FMT = "%H:%M:%S"
+deviceNumbers = 2;
 
 class Device(object):
   query = db_session.query_property()
