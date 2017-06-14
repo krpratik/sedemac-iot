@@ -5,9 +5,13 @@ from database import db_session, metadata
 from sqlalchemy import Table, Column, Integer, String
 from sqlalchemy.orm import mapper, clear_mappers
 from flask_sqlalchemy import SQLAlchemy
-from myproject.data import Device, deviceNumbers, list_trip_check, Device_derived, FMT
+from myproject.data import Device, deviceNumbers, Device_derived, FMT
 from datetime import timedelta
 ##### FOR SAVING DATA FROM THE DEVICE ######
+
+trip_check_1 = {'table_name': 1, 'trip_update': False, 'last_runtime_crank': -1, 'last_trip_time': '00:00:00', 'last_trip_date':'0000-00-00', 'count':0, 'avg_speed':0, 'avg_erpm':0, 'avg_engine_load':0, 'avg_throttle_position':0, 'trip_start_time':0};
+trip_check_2 = {'table_name': 2, 'trip_update': False, 'last_runtime_crank': -1, 'last_trip_time': '00:00:00', 'last_trip_date':'0000-00-00', 'count':0, 'avg_speed':0, 'avg_erpm':0, 'avg_engine_load':0, 'avg_throttle_position':0, 'trip_start_time':0};
+list_trip_check=[trip_check_1,trip_check_2];
 
 
 @app.route('/new', methods = ['POST'])
@@ -20,6 +24,7 @@ def new():
       if ((int(request.form['table_name']) <= 0) or (int(request.form['table_name']) > deviceNumbers)) :
         return ('Device not registered to database')
       else :
+
         erpm = request.form['erpm']
         engine_load = request.form['engine_load']
         runtime_crank = request.form['runtime_crank']
@@ -51,8 +56,6 @@ def new():
 
         device = Device(erpm,engine_load,runtime_crank,throttle_position, latitude,longitude,vehicle_speed,final_date,final_time)
         db_session.add(device)
-        db_session.commit()
-        clear_mappers();
 
         table_name = int(table_name)
         runtime_crank = int(runtime_crank)
@@ -64,7 +67,6 @@ def new():
         if ((list_trip_check[table_name-1]['last_runtime_crank'] > runtime_crank) or (runtime_crank == 0) or (list_trip_check[table_name - 1]['last_runtime_crank'] == -1)):
             
             if (list_trip_check[table_name-1]['trip_update']) :
-                clear_mappers();
                 devices_derived = Table("device_derived"+str(table_name), metadata,autoload=True
                 )
                 mapper(Device_derived, devices_derived)
@@ -80,8 +82,7 @@ def new():
                 trip_end_time = list_trip_check[table_name-1]['last_trip_time']
                 device_derived = Device_derived(trip_duration, trip_distance, trip_avg_speed, trip_avg_erpm, trip_avg_engine_load, trip_avg_throttle_position, trip_date, trip_end_time)
                 db_session.add(device_derived)
-                db_session.commit()
-                clear_mappers();
+
 
             list_trip_check[table_name-1]['trip_update'] = True
 
@@ -103,8 +104,10 @@ def new():
         list_trip_check[table_name-1]['avg_engine_load'] = float(list_trip_check[table_name-1]['avg_engine_load'] * (list_trip_check[table_name-1]['count'] - 1) + engine_load) / list_trip_check[table_name-1]['count']
         list_trip_check[table_name-1]['avg_throttle_position'] = float(list_trip_check[table_name-1]['avg_throttle_position'] * (list_trip_check[table_name-1]['count'] - 1) + throttle_position) / list_trip_check[table_name-1]['count']
         list_trip_check[table_name-1]['last_runtime_crank'] = runtime_crank
-        
 
+        db_session.commit()
+        clear_mappers();
+        
 
         return ('added successfully')
   return ('Yooo')
