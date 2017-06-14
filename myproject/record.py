@@ -24,6 +24,7 @@ def new():
       if ((int(request.form['table_name']) <= 0) or (int(request.form['table_name']) > deviceNumbers)) :
         return ('Device not registered to database')
       else :
+        new_data = False
 
         erpm = request.form['erpm']
         engine_load = request.form['engine_load']
@@ -56,7 +57,7 @@ def new():
 
         device = Device(erpm,engine_load,runtime_crank,throttle_position, latitude,longitude,vehicle_speed,final_date,final_time)
         db_session.add(device)
-
+        
         table_name = int(table_name)
         runtime_crank = int(runtime_crank)
         erpm = int(erpm)
@@ -82,6 +83,9 @@ def new():
                 trip_end_time = list_trip_check[table_name-1]['last_trip_time']
                 device_derived = Device_derived(trip_duration, trip_distance, trip_avg_speed, trip_avg_erpm, trip_avg_engine_load, trip_avg_throttle_position, trip_date, trip_end_time)
                 db_session.add(device_derived)
+                db_session.commit()
+                clear_mappers()
+                new_data = True
 
 
             list_trip_check[table_name-1]['trip_update'] = True
@@ -105,9 +109,10 @@ def new():
         list_trip_check[table_name-1]['avg_throttle_position'] = float(list_trip_check[table_name-1]['avg_throttle_position'] * (list_trip_check[table_name-1]['count'] - 1) + throttle_position) / list_trip_check[table_name-1]['count']
         list_trip_check[table_name-1]['last_runtime_crank'] = runtime_crank
 
-        db_session.commit()
-        clear_mappers();
-        
+        if (not new_data):
+            db_session.commit()
+            clear_mappers()
+
 
         return ('added successfully')
   return ('Yooo')
