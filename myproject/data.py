@@ -9,12 +9,6 @@ from flask_sqlalchemy import SQLAlchemy
 import json
 FMT = "%H:%M:%S"
 
-deviceNumbers = 2 ;
-trip_check_1 = {'table_name': 1, 'trip_update': False, 'last_runtime_crank': -1, 'last_trip_time': '00:00:00', 'last_trip_date':'0000-00-00', 'count':0, 'avg_speed':0, 'avg_erpm':0, 'avg_engine_load':0, 'avg_throttle_position':0, 'trip_start_time':0};
-trip_check_2 = {'table_name': 2, 'trip_update': False, 'last_runtime_crank': -1, 'last_trip_time': '00:00:00', 'last_trip_date':'0000-00-00', 'count':0, 'avg_speed':0, 'avg_erpm':0, 'avg_engine_load':0, 'avg_throttle_position':0, 'trip_start_time':0};
-
-list_trip_check=[trip_check_1,trip_check_2];
-
 class Device(object):
   query = db_session.query_property()
   def __init__(self, erpm, engine_load, runtime_crank, throttle_position, latitude, longitude, vehicle_speed, data_date, data_time):
