@@ -65,12 +65,9 @@ def new():
         throttle_position = int(throttle_position)
         vehicle_speed = int(vehicle_speed)
         
-        if ((list_trip_check[table_name-1]['last_runtime_crank'] > runtime_crank) or (runtime_crank == 0) or (list_trip_check[table_name - 1]['last_runtime_crank'] == -1)):
+        if ((runtime_crank == 0) or (list_trip_check[table_name - 1]['last_runtime_crank'] == -1)):
             
             if (list_trip_check[table_name-1]['trip_update']) :
-                print list_trip_check[table_name-1]['last_runtime_crank']
-                print runtime_crank
-                print ("blank")
                 devices_derived = Table("device_derived"+str(table_name), metadata,autoload=True
                 )
                 mapper(Device_derived, devices_derived)
