@@ -24,6 +24,7 @@ class Device(object):
 
 
 class Device_derived(object) :
+  query = db_session.query_property()
   def __init__(self, trip_duration, trip_distance, trip_avg_speed, trip_avg_erpm, trip_avg_engine_load, trip_avg_throttle_position, trip_date, trip_end_time):
     self.trip_duration = trip_duration
     self.trip_distance = trip_distance
@@ -33,6 +34,25 @@ class Device_derived(object) :
     self.trip_avg_throttle_position = trip_avg_throttle_position
     self.trip_date = trip_date
     self.trip_end_time = trip_end_time
+
+class Cummulative_record(object) :
+  query = db_session.query_property()
+  def __init__(self, device_number, device_name, trips_number, trips_avg_duration, trips_avg_distance, trips_avg_engine_load, trips_avg_erpm, trips_avg_throttle_position, trips_avg_speed, avg_engine_load, avg_erpm, avg_throttle_position, avg_speed, trips_total_distance, trips_total_duration) :
+    self.device_number = device_number
+    self.device_name = device_name
+    self.trips_number = trips_number
+    self.trips_avg_duration = trips_avg_duration
+    self.trips_avg_distance = trips_avg_distance
+    self.trips_avg_engine_load = trips_avg_engine_load
+    self.trips_avg_erpm = trips_avg_erpm
+    self.trips_avg_throttle_position = trips_avg_throttle_position
+    self.trips_avg_speed = trips_avg_speed
+    self.avg_engine_load = avg_engine_load
+    self.avg_erpm = avg_erpm
+    self.avg_throttle_position = avg_throttle_position
+    self.avg_speed = avg_speed
+    self.trips_total_distance = trips_total_distance
+    self.trips_total_duration = trips_total_duration
 
 
 @app.teardown_appcontext
