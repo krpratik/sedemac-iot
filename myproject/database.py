@@ -1,3 +1,6 @@
+#SQLAlchemy ORM is used to perform SQL Transactions .
+#
+
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import scoped_session, sessionmaker
 

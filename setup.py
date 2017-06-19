@@ -1,3 +1,5 @@
+#setuptools for setting up the environment for server
+
 from setuptools import setup
 
 setup(
