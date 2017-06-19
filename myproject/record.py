@@ -13,12 +13,12 @@ trip_check_1 = {'table_name': 1, 'trip_update': False, 'last_runtime_crank': -1,
 trip_check_2 = {'table_name': 2, 'trip_update': False, 'last_runtime_crank': -1, 'last_trip_time': '00:00:00', 'last_trip_date':'0000-00-00', 'count':0, 'avg_speed':0, 'avg_erpm':0, 'avg_engine_load':0, 'avg_throttle_position':0, 'trip_start_time':0};
 list_trip_check=[trip_check_1,trip_check_2];
 form_list = ['table_name', 'new_data', 'data_date', 'data_time', 'latitude', 'longitude', 'engine_load', 'erpm', 'vehicle_speed', 'runtime_crank', 'throttle_position']
-request_form ={}
+request_form ={'table_name':'', 'data_date':'', 'data_time':'', 'latitude':'', 'longitude':'', 'engine_load':'', 'erpm':'', 'vehicle_speed':'', 'runtime_crank':'', 'throttle_position':''}
 
 @app.route('/new', methods = ['POST'])
 def new():
     if request.method == 'POST' :
-        data_string = request.form['data']
+        data_string = request.form['d']
         data = data_string.split(',')
         for i in range(0, len(data)) :
             request_form[form_list[i]] = data[i]
