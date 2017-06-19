@@ -18,7 +18,7 @@ request_form ={}
 @app.route('/new', methods = ['POST'])
 def new():
     if request.method == 'POST' :
-        data_string = request.form['data']
+        data_string = request.form['d']
         data = data_string.split(',')
         for i in range(0, len(data)) :
             request_form[form_list[i]] = data[i]
