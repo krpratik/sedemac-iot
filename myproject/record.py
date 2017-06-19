@@ -12,29 +12,34 @@ from datetime import timedelta, datetime
 trip_check_1 = {'table_name': 1, 'trip_update': False, 'last_runtime_crank': -1, 'last_trip_time': '00:00:00', 'last_trip_date':'0000-00-00', 'count':0, 'avg_speed':0, 'avg_erpm':0, 'avg_engine_load':0, 'avg_throttle_position':0, 'trip_start_time':0};
 trip_check_2 = {'table_name': 2, 'trip_update': False, 'last_runtime_crank': -1, 'last_trip_time': '00:00:00', 'last_trip_date':'0000-00-00', 'count':0, 'avg_speed':0, 'avg_erpm':0, 'avg_engine_load':0, 'avg_throttle_position':0, 'trip_start_time':0};
 list_trip_check=[trip_check_1,trip_check_2];
-
+form_list = ['table_name', 'new_data', 'data_date', 'data_time', 'latitude', 'longitude', 'engine_load', 'erpm', 'vehicle_speed', 'runtime_crank', 'throttle_position']
+request_form ={}
 
 @app.route('/new', methods = ['POST'])
 def new():
     if request.method == 'POST' :
+        data_string = request.form['data']
+        data = data_string.split(',')
+        for i in range(0, len(data)) :
+            request_form[form_list[i]] = data[i]
         new_data = 0
 
-        if ('new_data' in request.form):
-            new_data = int(request.form['new_data'])
+        if ('new_data' in request_form):
+            new_data = int(request_form['new_data'])
 
-        if not(request.form['table_name'] and (request.form['data_date']) and (request.form['data_time'])) :
+        if not(request_form['table_name'] and (request_form['data_date']) and (request_form['data_time'])) :
             #flash('Please enter all the fields', 'error')
             return ("Empty attempt : please send table_name, data_time and data_date")
-        elif (not((int(request.form['table_name']) <= 0) or (int(request.form['table_name']) > deviceNumbers))) :
-            data_time = request.form['data_time']
+        elif (not((int(request_form['table_name']) <= 0) or (int(request_form['table_name']) > deviceNumbers))) :
+            data_time = request_form['data_time']
             data_time_str = str(data_time)
             ms = str(int(data_time_str[-2:])*10)
             ss = data_time_str[-4:-2]
             mm = data_time_str[-6:-4]
             hh = data_time_str[:-6]
             final_time = hh+':'+mm+':'+ss+'.'+ms
-            data_date = request.form['data_date']
-            table_name = int(request.form['table_name'])
+            data_date = request_form['data_date']
+            table_name = int(request_form['table_name'])
             data_date_str = str(data_date)
             year = '20'+data_date_str[-2:]
             month = data_date_str[-4:-2]
@@ -44,18 +49,18 @@ def new():
             return ('Device not registered to database')
 
         if (not new_data) :
-            if not(request.form['erpm'] and request.form['runtime_crank'] and request.form['engine_load'] and request.form['table_name'] and (request.form['table_name']>0) ) :
+            if not(request_form['erpm'] and request_form['runtime_crank'] and request_form['engine_load'] and request_form['table_name'] and (request_form['table_name']>0) ) :
                 #flash('Please enter all the fields', 'error')
                 return ("Empty attempt : Please send all the parameters")
             else :
-                table_name = request.form['table_name']
-                erpm = request.form['erpm']
-                engine_load = request.form['engine_load']
-                runtime_crank = request.form['runtime_crank']
-                throttle_position = request.form['throttle_position']
-                latitude = request.form['latitude']
-                longitude = request.form['longitude']
-                vehicle_speed = request.form['vehicle_speed']
+                table_name = request_form['table_name']
+                erpm = request_form['erpm']
+                engine_load = request_form['engine_load']
+                runtime_crank = request_form['runtime_crank']
+                throttle_position = request_form['throttle_position']
+                latitude = request_form['latitude']
+                longitude = request_form['longitude']
+                vehicle_speed = request_form['vehicle_speed']
                 
                 clear_mappers();
                 devices = Table("device"+table_name, metadata,autoload= True
