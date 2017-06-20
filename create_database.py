@@ -1,4 +1,5 @@
 #to run pgadmin use python lib/python2.7/site-packages/pgadmin4/pgAdmin4.py
+#python code to create tables in database in required format
 
 from flask import render_template, request
 from flask_sqlalchemy import SQLAlchemy
