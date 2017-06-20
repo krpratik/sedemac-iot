@@ -57,7 +57,7 @@ def new():
         #checking whether the minimum required parameters are present in the received data
         if not(request_form['table_name'] and (request_form['data_date']) and (request_form['data_time'])) :
             #flash('Please enter all the fields', 'error')
-            return ("Empty attempt : please send table_name, data_time and data_date")
+            return ("Empty attempt")
         elif (not((int(request_form['table_name']) <= 0) or (int(request_form['table_name']) > deviceNumbers))) :
             data_time = request_form['data_time']
             data_time_str = str(data_time)
