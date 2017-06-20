@@ -16,7 +16,7 @@ from myproject.data import Device, deviceNumbers, Device_derived, FMT, Cummulati
 from datetime import timedelta, datetime
 
 
-##### FOR SAVING DATA FROM THE DEVICE ######
+##### FOR SAVING DATA FROM THE DEVICE #######
 #Few basic variable initialization to be performed.
 #Raw data is directly stored in the database. 
 #For updating the seconday table when trips end, we keep taking running average of the curremt raw data.
