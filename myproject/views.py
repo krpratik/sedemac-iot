@@ -1,6 +1,5 @@
 #views.py contains API endpoints to serve the frontend pages for the website
 #As the name itself suggests it delas with aesthetic part of the frontend
-
 #The instance of app is imported from __init__.py
 from myproject import app
 from flask import Flask, flash, jsonify

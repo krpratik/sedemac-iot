@@ -1,8 +1,6 @@
 #SQLAlchemy ORM is used to perform SQL Transactions. It's an object mapper which maps tables in databases to classes in python
 #SQL transactions sessions are created such data such that every file of the module can perform transactions by importing
 # just this module
-
-
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import scoped_session, sessionmaker
 

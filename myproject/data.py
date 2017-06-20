@@ -2,7 +2,6 @@
 #It is like a store house of variables where all the classes and variables are defined and declared
 #Other modules needs to import variables from data.py when needed
 #It also contains the API endpoints (routes) to serve data from the database for charts or for further processing
-
 #Instance of the app to be imported
 from myproject import app
 #Jsonify is used to send the response from the server in JSON format. The data points are served in JSON format through jsonify

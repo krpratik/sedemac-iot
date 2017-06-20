@@ -1,8 +1,6 @@
 #Main application file. The routes are imported from views, data and record accordingly. 
-
 from flask import Flask
 app = Flask(__name__, static_folder='/static')
-
 #Route methods are imported below
 import myproject.views
 import myproject.record
