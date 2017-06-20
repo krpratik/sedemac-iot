@@ -1,32 +1,62 @@
+#record.py records the raw data sent by the device on-board 
+#The request is sent via POST request to the server
+#API endpoint to store raw data from vehicles into respective database
+
 from myproject import app
-from flask import Flask, flash, jsonify
+from flask import Flask, jsonify
+# SQL related settings and paramneters are imported for SQL transactions
 from flask import render_template, request, send_from_directory, json
 from database import db_session, metadata
 from sqlalchemy import Table, Column, Integer, String
 from sqlalchemy.orm import mapper, clear_mappers
 from flask_sqlalchemy import SQLAlchemy
+#Reuired variables are imported from variable store house ('data.py')
 from myproject.data import Device, deviceNumbers, Device_derived, FMT, Cummulative_record
+#Modules required for dealing with date and time type variables
 from datetime import timedelta, datetime
-##### FOR SAVING DATA FROM THE DEVICE ######
 
+
+##### FOR SAVING DATA FROM THE DEVICE ######
+#Few basic variable initialization to be performed.
+#Raw data is directly stored in the database. 
+#For updating the seconday table when trips end, we keep taking running average of the curremt raw data.
+#This running average is store in a a dictionary of python('trip_check_1' for device 1). 
+#Each device has it's own dictionary trip_check_devicenumnber. list_trip_check is a list which contains all the dicts as list
+
+# Initialization of dicts (trip_check) for two devices
 trip_check_1 = {'table_name': 1, 'trip_update': False, 'last_runtime_crank': -1, 'last_trip_time': '00:00:00', 'last_trip_date':'0000-00-00', 'count':0, 'avg_speed':0, 'avg_erpm':0, 'avg_engine_load':0, 'avg_throttle_position':0, 'trip_start_time':0};
 trip_check_2 = {'table_name': 2, 'trip_update': False, 'last_runtime_crank': -1, 'last_trip_time': '00:00:00', 'last_trip_date':'0000-00-00', 'count':0, 'avg_speed':0, 'avg_erpm':0, 'avg_engine_load':0, 'avg_throttle_position':0, 'trip_start_time':0};
-list_trip_check=[trip_check_1,trip_check_2];
-form_list = ['table_name', 'new_data', 'data_date', 'data_time', 'latitude', 'longitude', 'engine_load', 'erpm', 'vehicle_speed', 'runtime_crank', 'throttle_position']
-request_form ={'table_name':'', 'data_date':'', 'data_time':'', 'latitude':'', 'longitude':'', 'engine_load':'', 'erpm':'', 'vehicle_speed':'', 'runtime_crank':'', 'throttle_position':''}
 
+#Intialization of list containing every dict for each device
+list_trip_check=[trip_check_1,trip_check_2];
+
+#POST request posts all the data in a string but with comma separated vallues
+#We need to parse the string and assign parsed values to respective parameters
+#list of parameters to be parsed from from the POST request
+Form_list = ['table_name', 'new_data', 'data_date', 'data_time', 'latitude', 'longitude', 'engine_load', 'erpm', 'vehicle_speed', 'runtime_crank', 'throttle_position']
+
+#A dictionary created from POST data with key as parameter's name for easier access of values
+Request_form ={'table_name':'', 'data_date':'', 'data_time':'', 'latitude':'', 'longitude':'', 'engine_load':'', 'erpm':'', 'vehicle_speed':'', 'runtime_crank':'', 'throttle_position':''}
+
+#API endpoint to process and store raw data from device installeld onto vehicle
 @app.route('/new', methods = ['POST'])
 def new():
     if request.method == 'POST' :
+        request_form = Request_form
+        form_list = Form_list
+        #Storing the string posted via POST request method in variable
         data_string = request.form['d']
+        #parsing the string as it contains ',' (comma) separated values and stroing it in a list
         data = data_string.split(',')
+        #Iterating over the list and assigning values to respective key in request_form dictionary
         for i in range(0, len(data)) :
             request_form[form_list[i]] = data[i]
+        #Determining whether the data represents the marking of a new trip or the same old trip.
+        #new_data == 0 shows old trip and new_data == 1 shows new_trip
         new_data = 0
-
         if ('new_data' in request_form):
             new_data = int(request_form['new_data'])
-
+        #checking whether the minimum required parameters are present in the received data
         if not(request_form['table_name'] and (request_form['data_date']) and (request_form['data_time'])) :
             #flash('Please enter all the fields', 'error')
             return ("Empty attempt : please send table_name, data_time and data_date")
@@ -163,4 +193,3 @@ def new():
             # restore count
         return ('added successfully')
     return('Yooo : Method is not POST')
-
