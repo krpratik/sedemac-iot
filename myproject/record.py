@@ -40,8 +40,8 @@ Request_form ={'table_name':'', 'data_date':'', 'data_time':'', 'latitude':'', '
 @app.route('/new', methods = ['POST'])
 def new():
     if request.method == 'POST' :
-        request_form = Request_form
-        form_list = Form_list
+        request_form = {'table_name':'', 'data_date':'', 'data_time':'', 'latitude':'', 'longitude':'', 'engine_load':'', 'erpm':'', 'vehicle_speed':'', 'runtime_crank':'', 'throttle_position':''}
+        form_list = ['table_name', 'new_data', 'data_date', 'data_time', 'latitude', 'longitude', 'engine_load', 'erpm', 'vehicle_speed', 'runtime_crank', 'throttle_position']
         #Storing the string posted via POST request method in variable
         data_string = request.form['d']
         #parsing the string as it contains ',' (comma) separated values and stroing it in a list
@@ -77,7 +77,7 @@ def new():
             return ('Device not registered to database')
 
         if (not new_data) :
-            if not(request_form['erpm'] and request_form['runtime_crank'] and request_form['engine_load'] and request_form['table_name'] and (request_form['table_name']>0) ) :
+            if not(request_form['erpm'] and request_form['vehicle_speed'] and request_form['longitude'] and request_form['latitude'] and request_form['throttle_position'] and request_form['runtime_crank'] and request_form['engine_load'] and request_form['table_name'] and (request_form['table_name']>0) ) :
                 #flash('Please enter all the fields', 'error')
                 return ("Empty attempt : Please send all the parameters")
             else :
