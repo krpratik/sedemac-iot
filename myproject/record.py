@@ -14,7 +14,6 @@ from myproject.data import Device, deviceNumbers, Device_derived, FMT, Cummulati
 #Modules required for dealing with date and time type variables
 from datetime import timedelta, datetime
 
-
 ##### FOR SAVING DATA FROM THE DEVICE #######
 #Few basic variable initialization to be performed.
 #Raw data is directly stored in the database. 
