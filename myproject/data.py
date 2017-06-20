@@ -5,7 +5,6 @@
 #It is like a store house of variables where all the classes and variables are defined and declared
 #Other modules needs to import variables from data.py when needed
 #It also contains the API endpoints (routes) to serve data from the database for charts or for further processing
-
 #Instance of the app to be imported
 >>>>>>> d8724535f7a6a2eb24488633a86bf5f9ac33fb97
 from myproject import app

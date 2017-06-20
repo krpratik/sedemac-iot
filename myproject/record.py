@@ -1,7 +1,6 @@
 #record.py records the raw data sent by the device on-board 
 #The request is sent via POST request to the server
 #API endpoint to store raw data from vehicles into respective database
-
 from myproject import app
 from flask import Flask, jsonify
 # SQL related settings and paramneters are imported for SQL transactions
