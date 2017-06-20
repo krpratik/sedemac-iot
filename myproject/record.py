@@ -118,7 +118,6 @@ def new():
                 list_trip_check[table_name-1]['last_runtime_crank'] = runtime_crank
 
         else :
-
             if (list_trip_check[table_name-1]['trip_update'] and (list_trip_check[table_name-1]['last_runtime_crank'] != -1)) :
                 clear_mappers()
                 devices_derived = Table("device_derived"+str(table_name), metadata,autoload=True
