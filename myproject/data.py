@@ -1,12 +1,8 @@
-<<<<<<< HEAD
-
-=======
 #The data.py module consists of variables and class declaration which are to be used by various other modules.
 #It is like a store house of variables where all the classes and variables are defined and declared
 #Other modules needs to import variables from data.py when needed
 #It also contains the API endpoints (routes) to serve data from the database for charts or for further processing
 #Instance of the app to be imported
->>>>>>> d8724535f7a6a2eb24488633a86bf5f9ac33fb97
 from myproject import app
 #Jsonify is used to send the response from the server in JSON format. The data points are served in JSON format through jsonify
 from flask import Flask, jsonify
@@ -114,9 +110,6 @@ def show_all(device_id, chart_id):
       #value_list is created in format as required by front-end
       value_list.append(['speed',datas.vehicle_speed])
     clear_mappers();
-<<<<<<< HEAD
-    #return json.dumps(value_list)
-=======
     #Response sent in JSON format
->>>>>>> d8724535f7a6a2eb24488633a86bf5f9ac33fb97
     return jsonify(value_list)
+
