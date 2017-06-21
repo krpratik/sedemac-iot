@@ -72,6 +72,22 @@ class Cummulative_record(object) :
     self.trips_total_duration = trips_total_duration
 
 
+class Last_data(object) :
+  query = db_session.query_property()
+  def __init__(self, device_number, trip_update, last_runtime_crank, last_trip_time, last_trip_date, count, avg_speed, avg_erpm, avg_engine_load, avg_throttle_position, trip_start_time) :
+    self.device_number = device_number
+    self.trip_update = trip_update
+    self.last_runtime_crank = last_runtime_crank
+    self.last_trip_time = last_trip_time
+    self.last_trip_date = last_trip_date
+    self.count = count
+    self.avg_speed = avg_speed
+    self.avg_erpm = avg_erpm
+    self.avg_engine_load = avg_engine_load
+    self.avg_throttle_position = avg_throttle_position
+    self.trip_start_time = trip_start_time
+
+
 #TO shutdown or end the SQL session when app shutsdown
 @app.teardown_appcontext
 def shutdown_session(exception=None):
