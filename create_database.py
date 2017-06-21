@@ -20,6 +20,34 @@ if __name__=="__main__":
   app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///xyzdb'
   db = SQLAlchemy(app)
 
+  class Last_data(db.Model) :
+    __tablename__="last_data"
+    id = db.Column(db.Integer, primary_key = True)
+    device_number = db.Column(db.Integer)
+    trip_update= db.Column(db.Integer)
+    last_runtime_crank= db.Column(db.Integer)
+    last_trip_time= db.Column(db.Time)
+    last_trip_date= db.Column(db.Date)
+    count= db.Column(db.Integer)
+    avg_speed= db.Column(db.Float)
+    avg_erpm= db.Column(db.Float)
+    avg_engine_load= db.Column(db.Float)
+    avg_throttle_position= db.Column(db.Float)
+    trip_start_time=db.Column(db.Time)
+
+    def __init__(self, device_number, trip_update, last_runtime_crank, last_trip_time, last_trip_date, count, avg_speed, avg_erpm, avg_engine_load, avg_throttle_position, trip_start_time) :
+      self.device_number = device_number
+      self.trip_update = trip_update
+      self.last_runtime_crank = last_runtime_crank
+      self.last_trip_time = last_trip_time
+      self.last_trip_date = last_trip_date
+      self.count = count
+      self.avg_speed = avg_speed
+      self.avg_erpm = avg_erpm
+      self.avg_engine_load = avg_engine_load
+      self.avg_throttle_position = avg_throttle_position
+      self.trip_start_time = trip_start_time
+
   class cummulative_record(db.Model) :
     __tablename__="cummulative_record"
     id = db.Column(db.Integer, primary_key = True)
@@ -60,6 +88,8 @@ if __name__=="__main__":
   for device in range(1,deviceNumbers+1) :
     Cummulative_record = cummulative_record(device, "device_"+str(device), 0,'00:00:00', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,'00:00:00')
     db_session.add(Cummulative_record)
+    last_Data = Last_data(device, 0, -1, '00:00:00', '2000-01-01', 0, 0, 0, 0, 0, '00:00:00')
+    db_session.add(last_Data)
     class Device(db.Model):
       __tablename__= "device"+str(device)
       id = db.Column(db.Integer, primary_key = True)

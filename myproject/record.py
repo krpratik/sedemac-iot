@@ -10,7 +10,7 @@ from sqlalchemy import Table, Column, Integer, String
 from sqlalchemy.orm import mapper, clear_mappers
 from flask_sqlalchemy import SQLAlchemy
 #Reuired variables are imported from variable store house ('data.py')
-from myproject.data import Device, deviceNumbers, Device_derived, FMT, Cummulative_record
+from myproject.data import Device, deviceNumbers, Device_derived, FMT, Cummulative_record, Last_data
 #Modules required for dealing with date and time type variables
 from datetime import timedelta, datetime
 
@@ -22,11 +22,11 @@ from datetime import timedelta, datetime
 #Each device has it's own dictionary trip_check_devicenumnber. list_trip_check is a list which contains all the dicts as list
 
 # Initialization of dicts (trip_check) for two devices
-trip_check_1 = {'table_name': 1, 'trip_update': False, 'last_runtime_crank': -1, 'last_trip_time': '00:00:00', 'last_trip_date':'0000-00-00', 'count':0, 'avg_speed':0, 'avg_erpm':0, 'avg_engine_load':0, 'avg_throttle_position':0, 'trip_start_time':0};
-trip_check_2 = {'table_name': 2, 'trip_update': False, 'last_runtime_crank': -1, 'last_trip_time': '00:00:00', 'last_trip_date':'0000-00-00', 'count':0, 'avg_speed':0, 'avg_erpm':0, 'avg_engine_load':0, 'avg_throttle_position':0, 'trip_start_time':0};
+#trip_check_1 = {'table_name': 1, 'trip_update': False, 'last_runtime_crank': -1, 'last_trip_time': '00:00:00', 'last_trip_date':'0000-00-00', 'count':0, 'avg_speed':0, 'avg_erpm':0, 'avg_engine_load':0, 'avg_throttle_position':0, 'trip_start_time':0};
+#trip_check_2 = {'table_name': 2, 'trip_update': False, 'last_runtime_crank': -1, 'last_trip_time': '00:00:00', 'last_trip_date':'0000-00-00', 'count':0, 'avg_speed':0, 'avg_erpm':0, 'avg_engine_load':0, 'avg_throttle_position':0, 'trip_start_time':0};
 
 #Intialization of list containing every dict for each device
-list_trip_check=[trip_check_1,trip_check_2];
+#list_trip_check=[trip_check_1,trip_check_2];
 
 #POST request posts all the data in a string but with comma separated vallues
 #We need to parse the string and assign parsed values to respective parameters
@@ -41,6 +41,7 @@ Request_form ={'table_name':'', 'data_date':'', 'data_time':'', 'latitude':'', '
 def new():
     if request.method == 'POST' :
         request_form = {'table_name':'', 'data_date':'', 'data_time':'', 'latitude':'', 'longitude':'', 'engine_load':'', 'erpm':'', 'vehicle_speed':'', 'runtime_crank':'', 'throttle_position':''}
+        trip_check = {'trip_update': False, 'last_runtime_crank': -1, 'last_trip_time': '00:00:00', 'last_trip_date':'0000-00-00', 'count':0, 'avg_speed':0, 'avg_erpm':0, 'avg_engine_load':0, 'avg_throttle_position':0, 'trip_start_time':0};
         form_list = ['table_name', 'new_data', 'data_date', 'data_time', 'latitude', 'longitude', 'engine_load', 'erpm', 'vehicle_speed', 'runtime_crank', 'throttle_position']
         #Storing the string posted via POST request method in variable
         data_string = request.form['d']
@@ -73,6 +74,21 @@ def new():
             month = data_date_str[-4:-2]
             day = data_date_str[:-4]
             final_date = year+'-'+month+'-'+day
+            clear_mappers()
+            last_data = Table("last_data", metadata, autoload= True
+            )
+            mapper(Last_data, last_data)
+            data_last = Last_data.query.filter(Last_data.device_number == table_name).first()
+            trip_check['trip_update']=data_last.trip_update
+            trip_check['last_runtime_crank']=data_last.last_runtime_crank
+            trip_check['last_trip_time']=data_last.last_trip_time
+            trip_check['last_trip_date']=data_last.last_trip_date
+            trip_check['count']=data_last.count
+            trip_check['avg_speed']=data_last.avg_speed
+            trip_check['avg_erpm']=data_last.avg_erpm
+            trip_check['avg_engine_load']=data_last.avg_engine_load
+            trip_check['avg_throttle_position']=data_last.avg_throttle_position
+            trip_check['trip_start_time'] = data_last.trip_start_time
         else :
             return ('Device not registered to database')
 
@@ -89,17 +105,14 @@ def new():
                 latitude = request_form['latitude']
                 longitude = request_form['longitude']
                 vehicle_speed = request_form['vehicle_speed']
-                
-                clear_mappers();
+                #clear_mappers();
                 devices = Table("device"+table_name, metadata,autoload= True
                 )
                 mapper(Device, devices)
 
                 device = Device(erpm,engine_load,runtime_crank,throttle_position, latitude,longitude,vehicle_speed,final_date,final_time)
                 db_session.add(device)
-                db_session.commit()
-                clear_mappers()
-                
+
                 table_name = int(table_name)
                 runtime_crank = int(runtime_crank)
                 erpm = int(erpm)
@@ -108,31 +121,33 @@ def new():
                 vehicle_speed = int(vehicle_speed)
 
                 # if old general data
-                list_trip_check[table_name-1]['last_trip_time'] = hh+':'+mm+':'+ss
-                list_trip_check[table_name-1]['last_trip_date'] = final_date
-                list_trip_check[table_name-1]['count'] = list_trip_check[table_name-1]['count']+1
-                list_trip_check[table_name-1]['avg_speed'] = float(list_trip_check[table_name-1]['avg_speed'] * (list_trip_check[table_name-1]['count'] - 1) + vehicle_speed) / list_trip_check[table_name-1]['count']
-                list_trip_check[table_name-1]['avg_erpm'] = float(list_trip_check[table_name-1]['avg_erpm'] * (list_trip_check[table_name-1]['count'] - 1) + erpm) / list_trip_check[table_name-1]['count']
-                list_trip_check[table_name-1]['avg_engine_load'] = float(list_trip_check[table_name-1]['avg_engine_load'] * (list_trip_check[table_name-1]['count'] - 1) + engine_load) / list_trip_check[table_name-1]['count']
-                list_trip_check[table_name-1]['avg_throttle_position'] = float(list_trip_check[table_name-1]['avg_throttle_position'] * (list_trip_check[table_name-1]['count'] - 1) + throttle_position) / list_trip_check[table_name-1]['count']
-                list_trip_check[table_name-1]['last_runtime_crank'] = runtime_crank
+                data_last.last_trip_time = hh+':'+mm+':'+ss
+                data_last.last_trip_date = final_date
+                data_last.count = trip_check['count']+1
+                data_last.avg_speed = float(trip_check['avg_speed'] * (trip_check['count'] - 1) + vehicle_speed) / (trip_check['count'] + 1)
+                data_last.avg_erpm = float(trip_check['avg_erpm'] * (trip_check['count'] - 1) + erpm) / (trip_check['count'] + 1)
+                data_last.avg_engine_load = float(trip_check['avg_engine_load'] * (trip_check['count'] - 1) + engine_load) / (trip_check['count'] + 1)
+                data_last.avg_throttle_position = float(trip_check['avg_throttle_position'] * (trip_check['count'] - 1) + throttle_position) / (trip_check['count'] + 1)
+                data_last.last_runtime_crank = runtime_crank
 
-        else :
-            if (list_trip_check[table_name-1]['trip_update'] and (list_trip_check[table_name-1]['last_runtime_crank'] != -1)) :
+                db_session.commit()
                 clear_mappers()
+        else :
+            if (trip_check['trip_update'] and (trip_check['last_runtime_crank'] != -1)) :
+                #clear_mappers()
                 devices_derived = Table("device_derived"+str(table_name), metadata,autoload=True
                 )
                 mapper(Device_derived, devices_derived)
-                #duration = datetime.strptime(list_trip_check[table_name-1]['trip_start_time'], FMT) - datetime.strptime(list_trip_check[table_name-1]['last_trip_time'], FMT)
-                duration = timedelta(seconds = list_trip_check[table_name-1]['last_runtime_crank'])
+                #duration = datetime.strptime(trip_check['trip_start_time'], FMT) - datetime.strptime(trip_check['last_trip_time'], FMT)
+                duration = timedelta(seconds = trip_check['last_runtime_crank'])
                 trip_duration = str(duration)
-                trip_distance = list_trip_check[table_name-1]['avg_speed'] * duration.total_seconds() / 3600
-                trip_avg_speed = list_trip_check[table_name-1]['avg_speed']
-                trip_avg_erpm = list_trip_check[table_name-1]['avg_erpm']
-                trip_avg_engine_load = list_trip_check[table_name-1]['avg_engine_load']
-                trip_avg_throttle_position = list_trip_check[table_name-1]['avg_throttle_position']
-                trip_date = list_trip_check[table_name-1]['last_trip_date']
-                trip_end_time = list_trip_check[table_name-1]['last_trip_time']
+                trip_distance = trip_check['avg_speed'] * duration.total_seconds() / 3600
+                trip_avg_speed =trip_check['avg_speed']
+                trip_avg_erpm = trip_check['avg_erpm']
+                trip_avg_engine_load = trip_check['avg_engine_load']
+                trip_avg_throttle_position = trip_check['avg_throttle_position']
+                trip_date = trip_check['last_trip_date']
+                trip_end_time = trip_check['last_trip_time']
                 device_derived = Device_derived(trip_duration, trip_distance, trip_avg_speed, trip_avg_erpm, trip_avg_engine_load, trip_avg_throttle_position, trip_date, trip_end_time)
                 db_session.add(device_derived)
 
@@ -175,17 +190,17 @@ def new():
                 data.avg_erpm = avg_erpm
                 data.avg_throttle_position = avg_throttle_position
                 data.avg_speed = avg_speed
-                db_session.commit()
-                clear_mappers()
-        
-            list_trip_check[table_name-1]['trip_update'] = True
-            list_trip_check[table_name-1]['trip_start_time'] = hh+':'+mm+':'+ss
-            list_trip_check[table_name-1]['count'] = 0
-            list_trip_check[table_name-1]['avg_speed'] = 0
-            list_trip_check[table_name-1]['avg_erpm'] = 0
-            list_trip_check[table_name-1]['avg_engine_load'] = 0
-            list_trip_check[table_name-1]['avg_throttle_position'] = 0
-            list_trip_check[table_name-1]['last_runtime_crank'] = -1
+
+            data_last.trip_update = int(True)
+            data_last.trip_start_time = hh+':'+mm+':'+ss
+            data_last.count = 0
+            data_last.avg_speed = 0
+            data_last.avg_erpm = 0
+            data_last.avg_engine_load = 0
+            data_last.avg_throttle_position = 0
+            data_last.last_runtime_crank = -1
+            db_session.commit()
+            clear_mappers()
             # record starting time
             # restore count
         return ('added successfully')
