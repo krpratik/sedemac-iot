@@ -5,6 +5,11 @@ app = Flask(__name__, static_folder='/static')
 import myproject.views
 import myproject.record
 import myproject.data
+import logging
+logHandler = logging.FileHandler('./sedemac_iot_error.log')
+logHandler.setLevel(logging.DEBUG)
+app.logger.addHandler(logHandler)
+app.logger.setLevel(logging.DEBUG)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0')
