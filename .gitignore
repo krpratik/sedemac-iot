@@ -3,3 +3,6 @@
 
 # python egg metadata
 /*.egg-info
+
+#Error log file
+*.log
