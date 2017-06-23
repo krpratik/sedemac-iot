@@ -34,7 +34,7 @@ Request_form ={'table_name':'', 'data_date':'', 'data_time':'', 'latitude':'', '
 def new():
     if request.method == 'POST' :
         request_form = {'table_name':'', 'data_date':'', 'data_time':'', 'latitude':'', 'longitude':'', 'altitude':'', 'engine_load':'', 'erpm':'', 'vehicle_speed':'', 'runtime_crank':'', 'throttle_position':''}
-        trip_check = {'trip_update': False, 'last_runtime_crank': -1, 'last_trip_time': '00:00:00', 'last_trip_date':'0000-00-00', 'count':0, 'avg_speed':0, 'avg_erpm':0, 'avg_engine_load':0, 'avg_throttle_position':0, 'trip_start_time':0, 'trip_latitude':0, 'trip_longitude':0, 'trip_altitude':0};
+        trip_check = {'trip_update': False, 'last_runtime_crank': -1, 'last_trip_time': '00:00:00', 'last_trip_date':'2011-11-11', 'count':0, 'avg_speed':0, 'avg_erpm':0, 'avg_engine_load':0, 'avg_throttle_position':0, 'trip_start_time':0, 'trip_latitude':0, 'trip_longitude':0, 'trip_altitude':0};
         form_list = ['table_name', 'new_data', 'data_date', 'data_time', 'latitude', 'longitude', 'altitude', 'engine_load', 'erpm', 'vehicle_speed', 'runtime_crank', 'throttle_position']
         #Storing the string posted via POST request method in variable
         data_string = request.form['d']
@@ -42,7 +42,18 @@ def new():
         data = data_string.split(',')
         #Iterating over the list and assigning values to respective key in request_form dictionary
         for i in range(0, len(data)) :
-            request_form[form_list[i]] = data[i]
+            if (i == 2) :
+                if(int(data[i]) == 0):
+                    request_form[form_list[i]] = '111111'
+                else :
+                    request_form[form_list[i]] = data[i]
+            elif (i == 3) :
+                if(int(data[i]) == 0):
+                    request_form[form_list[i]] = '00000000'
+                else :
+                    request_form[form_list[i]] = data[i]
+            else :
+                request_form[form_list[i]] = data[i]
         #Determining whether the data represents the marking of a new trip or the same old trip.
         #new_data == 0 shows old trip and new_data == 1 shows new_trip
         new_data = 0
@@ -125,7 +136,7 @@ def new():
                     trip_check['trip_longitude'] = float(longitude)
                     data_last.trip_longitude = float(longitude)
 
-                if (trip_check['last_trip_date'] == '1111-11-11') :
+                if (trip_check['last_trip_date'] == '2011-11-11') :
                     trip_check['last_trip_date'] = final_date
                     data_last.last_trip_date = final_date
 
