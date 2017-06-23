@@ -67,8 +67,8 @@ def new():
             month = data_date_str[-4:-2]
             day = data_date_str[:-4]
             final_date = year+'-'+month+'-'+day
-            latitude = request_form['latitude']
-            longitude = request_form['longitude']
+            latitude = float(request_form['latitude'])/1000000.0
+            longitude = float(request_form['longitude'])/1000000.0
             clear_mappers()
             last_data = Table("last_data", metadata, autoload= True
             )
