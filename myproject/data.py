@@ -25,13 +25,14 @@ deviceNumbers = 2;
 #The attributes of this class represents column of the table of raw data like erpm, engine_load
 class Device(object):
   query = db_session.query_property()
-  def __init__(self, erpm, engine_load, runtime_crank, throttle_position, latitude, longitude, vehicle_speed, data_date, data_time):
+  def __init__(self, erpm, engine_load, runtime_crank, throttle_position, latitude, longitude, altitude, vehicle_speed, data_date, data_time):
     self.erpm = erpm
     self.engine_load = engine_load
     self.runtime_crank = runtime_crank
     self.throttle_position = throttle_position
     self.latitude = latitude
     self.longitude = longitude
+    self.altitude = altitude
     self.vehicle_speed = vehicle_speed
     self.data_date = data_date
     self.data_time = data_time
@@ -40,7 +41,7 @@ class Device(object):
 #This class is automatically mapped to respective table in database by SQLAlchemy
 class Device_derived(object) :
   query = db_session.query_property()
-  def __init__(self, trip_duration, trip_distance, trip_avg_speed, trip_avg_erpm, trip_avg_engine_load, trip_avg_throttle_position, trip_date, trip_end_time):
+  def __init__(self, trip_duration, trip_distance, trip_avg_speed, trip_avg_erpm, trip_avg_engine_load, trip_avg_throttle_position, trip_date, trip_end_time, trip_start_time, trip_latitude, trip_longitude, trip_altitude):
     self.trip_duration = trip_duration
     self.trip_distance = trip_distance
     self.trip_avg_speed = trip_avg_speed
@@ -49,6 +50,10 @@ class Device_derived(object) :
     self.trip_avg_throttle_position = trip_avg_throttle_position
     self.trip_date = trip_date
     self.trip_end_time = trip_end_time
+    self.trip_start_time = trip_start_time
+    self.trip_latitude = trip_latitude
+    self.trip_longitude = trip_longitude
+    self.trip_altitude = trip_altitude
 
 #Class definition for cummulative table record in the database. This table contains one row for each vehcile representing overall stats 
 #A query done on this table will give a list of overall stats of all the vehicles
@@ -74,7 +79,7 @@ class Cummulative_record(object) :
 
 class Last_data(object) :
   query = db_session.query_property()
-  def __init__(self, device_number, trip_update, last_runtime_crank, last_trip_time, last_trip_date, count, avg_speed, avg_erpm, avg_engine_load, avg_throttle_position, trip_start_time) :
+  def __init__(self, device_number, trip_update, last_runtime_crank, last_trip_time, last_trip_date, count, avg_speed, avg_erpm, avg_engine_load, avg_throttle_position, trip_start_time, trip_latitude, trip_longitude, trip_altitude) :
     self.device_number = device_number
     self.trip_update = trip_update
     self.last_runtime_crank = last_runtime_crank
@@ -86,6 +91,10 @@ class Last_data(object) :
     self.avg_engine_load = avg_engine_load
     self.avg_throttle_position = avg_throttle_position
     self.trip_start_time = trip_start_time
+    self.trip_latitude = trip_latitude
+    self.trip_longitude = trip_longitude
+    self.trip_altitude = trip_altitude
+
 
 
 #TO shutdown or end the SQL session when app shutsdown

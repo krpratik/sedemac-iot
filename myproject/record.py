@@ -21,13 +21,6 @@ from datetime import timedelta, datetime
 #This running average is store in a a dictionary of python('trip_check_1' for device 1). 
 #Each device has it's own dictionary trip_check_devicenumnber. list_trip_check is a list which contains all the dicts as list
 
-# Initialization of dicts (trip_check) for two devices
-#trip_check_1 = {'table_name': 1, 'trip_update': False, 'last_runtime_crank': -1, 'last_trip_time': '00:00:00', 'last_trip_date':'0000-00-00', 'count':0, 'avg_speed':0, 'avg_erpm':0, 'avg_engine_load':0, 'avg_throttle_position':0, 'trip_start_time':0};
-#trip_check_2 = {'table_name': 2, 'trip_update': False, 'last_runtime_crank': -1, 'last_trip_time': '00:00:00', 'last_trip_date':'0000-00-00', 'count':0, 'avg_speed':0, 'avg_erpm':0, 'avg_engine_load':0, 'avg_throttle_position':0, 'trip_start_time':0};
-
-#Intialization of list containing every dict for each device
-#list_trip_check=[trip_check_1,trip_check_2];
-
 #POST request posts all the data in a string but with comma separated vallues
 #We need to parse the string and assign parsed values to respective parameters
 #list of parameters to be parsed from from the POST request
@@ -40,9 +33,9 @@ Request_form ={'table_name':'', 'data_date':'', 'data_time':'', 'latitude':'', '
 @app.route('/new', methods = ['POST'])
 def new():
     if request.method == 'POST' :
-        request_form = {'table_name':'', 'data_date':'', 'data_time':'', 'latitude':'', 'longitude':'', 'engine_load':'', 'erpm':'', 'vehicle_speed':'', 'runtime_crank':'', 'throttle_position':''}
-        trip_check = {'trip_update': False, 'last_runtime_crank': -1, 'last_trip_time': '00:00:00', 'last_trip_date':'0000-00-00', 'count':0, 'avg_speed':0, 'avg_erpm':0, 'avg_engine_load':0, 'avg_throttle_position':0, 'trip_start_time':0};
-        form_list = ['table_name', 'new_data', 'data_date', 'data_time', 'latitude', 'longitude', 'engine_load', 'erpm', 'vehicle_speed', 'runtime_crank', 'throttle_position']
+        request_form = {'table_name':'', 'data_date':'', 'data_time':'', 'latitude':'', 'longitude':'', 'altitude':'', 'engine_load':'', 'erpm':'', 'vehicle_speed':'', 'runtime_crank':'', 'throttle_position':''}
+        trip_check = {'trip_update': False, 'last_runtime_crank': -1, 'last_trip_time': '00:00:00', 'last_trip_date':'0000-00-00', 'count':0, 'avg_speed':0, 'avg_erpm':0, 'avg_engine_load':0, 'avg_throttle_position':0, 'trip_start_time':0, 'trip_latitude':0, 'trip_longitude':0, 'trip_altitude':0};
+        form_list = ['table_name', 'new_data', 'data_date', 'data_time', 'latitude', 'longitude', 'altitude', 'engine_load', 'erpm', 'vehicle_speed', 'runtime_crank', 'throttle_position']
         #Storing the string posted via POST request method in variable
         data_string = request.form['d']
         #parsing the string as it contains ',' (comma) separated values and stroing it in a list
@@ -56,7 +49,7 @@ def new():
         if ('new_data' in request_form):
             new_data = int(request_form['new_data'])
         #checking whether the minimum required parameters are present in the received data
-        if not(request_form['table_name'] and (request_form['data_date']) and (request_form['data_time'])) :
+        if not(request_form['table_name'] and (request_form['data_date']) and (request_form['data_time']) and (request_form['latitude']) and (request_form['longitude'])) :
             #flash('Please enter all the fields', 'error')
             return ("Empty attempt")
         elif (not((int(request_form['table_name']) <= 0) or (int(request_form['table_name']) > deviceNumbers))) :
@@ -74,6 +67,8 @@ def new():
             month = data_date_str[-4:-2]
             day = data_date_str[:-4]
             final_date = year+'-'+month+'-'+day
+            latitude = request_form['latitude']
+            longitude = request_form['longitude']
             clear_mappers()
             last_data = Table("last_data", metadata, autoload= True
             )
@@ -89,28 +84,30 @@ def new():
             trip_check['avg_engine_load']=data_last.avg_engine_load
             trip_check['avg_throttle_position']=data_last.avg_throttle_position
             trip_check['trip_start_time'] = data_last.trip_start_time
+            trip_check['trip_latitude']= data_last.trip_latitude
+            trip_check['trip_longitude']=data_last.trip_longitude
+            trip_check['trip_altitude']= data_last.trip_altitude
         else :
             return ('Device not registered to database')
 
         if (not new_data) :
-            if not(request_form['erpm'] and request_form['vehicle_speed'] and request_form['longitude'] and request_form['latitude'] and request_form['throttle_position'] and request_form['runtime_crank'] and request_form['engine_load'] and request_form['table_name'] and (request_form['table_name']>0) ) :
+            if not(request_form['altitude'] and request_form['erpm'] and request_form['vehicle_speed'] and request_form['throttle_position'] and request_form['runtime_crank'] and request_form['engine_load'] and request_form['table_name'] and (request_form['table_name']>0) ) :
                 #flash('Please enter all the fields', 'error')
                 return ("Empty attempt : Please send all the parameters")
             else :
+                altitude = request_form['altitude']
                 table_name = request_form['table_name']
                 erpm = request_form['erpm']
                 engine_load = request_form['engine_load']
                 runtime_crank = request_form['runtime_crank']
                 throttle_position = request_form['throttle_position']
-                latitude = request_form['latitude']
-                longitude = request_form['longitude']
                 vehicle_speed = request_form['vehicle_speed']
                 #clear_mappers();
                 devices = Table("device"+table_name, metadata,autoload= True
                 )
                 mapper(Device, devices)
 
-                device = Device(erpm,engine_load,runtime_crank,throttle_position, latitude,longitude,vehicle_speed,final_date,final_time)
+                device = Device(erpm,engine_load,runtime_crank,throttle_position, latitude, longitude, altitude, vehicle_speed,final_date,final_time)
                 db_session.add(device)
 
                 table_name = int(table_name)
@@ -120,14 +117,29 @@ def new():
                 throttle_position = int(throttle_position)
                 vehicle_speed = int(vehicle_speed)
 
+                if (trip_check['trip_latitude'] == 0) :
+                    trip_check['trip_latitude'] = float(latitude)
+                    data_last.trip_latitude  = float(latitude)
+
+                if (trip_check['trip_longitude'] == 0):
+                    trip_check['trip_longitude'] = float(longitude)
+                    data_last.trip_longitude = float(longitude)
+
+                if (trip_check['last_trip_date'] == '1111-11-11') :
+                    trip_check['last_trip_date'] = final_date
+                    data_last.last_trip_date = final_date
+
+                if (trip_check['trip_altitude'] == 0):
+                    trip_check['trip_altitude'] = float(altitude)
+                    data_last.trip_altitude = float(altitude)
+
                 # if old general data
                 data_last.last_trip_time = hh+':'+mm+':'+ss
-                data_last.last_trip_date = final_date
                 data_last.count = trip_check['count']+1
-                data_last.avg_speed = float(trip_check['avg_speed'] * (trip_check['count'] - 1) + vehicle_speed) / (trip_check['count'] + 1)
-                data_last.avg_erpm = float(trip_check['avg_erpm'] * (trip_check['count'] - 1) + erpm) / (trip_check['count'] + 1)
-                data_last.avg_engine_load = float(trip_check['avg_engine_load'] * (trip_check['count'] - 1) + engine_load) / (trip_check['count'] + 1)
-                data_last.avg_throttle_position = float(trip_check['avg_throttle_position'] * (trip_check['count'] - 1) + throttle_position) / (trip_check['count'] + 1)
+                data_last.avg_speed = float(trip_check['avg_speed'] * (trip_check['count']) + vehicle_speed) / (trip_check['count'] + 1)
+                data_last.avg_erpm = float(trip_check['avg_erpm'] * (trip_check['count']) + erpm) / (trip_check['count'] + 1)
+                data_last.avg_engine_load = float(trip_check['avg_engine_load'] * (trip_check['count']) + engine_load) / (trip_check['count'] + 1)
+                data_last.avg_throttle_position = float(trip_check['avg_throttle_position'] * (trip_check['count']) + throttle_position) / (trip_check['count'] + 1)
                 data_last.last_runtime_crank = runtime_crank
 
                 db_session.commit()
@@ -148,7 +160,12 @@ def new():
                 trip_avg_throttle_position = trip_check['avg_throttle_position']
                 trip_date = trip_check['last_trip_date']
                 trip_end_time = trip_check['last_trip_time']
-                device_derived = Device_derived(trip_duration, trip_distance, trip_avg_speed, trip_avg_erpm, trip_avg_engine_load, trip_avg_throttle_position, trip_date, trip_end_time)
+                trip_latitude = trip_check['trip_latitude']
+                trip_longitude = trip_check['trip_longitude']
+                trip_altitude = trip_check['trip_altitude']
+                trip_start_time = trip_check['trip_start_time']
+
+                device_derived = Device_derived(trip_duration, trip_distance, trip_avg_speed, trip_avg_erpm, trip_avg_engine_load, trip_avg_throttle_position, trip_date, trip_end_time, trip_start_time, trip_latitude, trip_longitude, trip_altitude)
                 db_session.add(device_derived)
 
                 cummulative_Record = Table("cummulative_record", metadata, autoload=True
@@ -193,6 +210,10 @@ def new():
 
             data_last.trip_update = int(True)
             data_last.trip_start_time = hh+':'+mm+':'+ss
+            data_last.trip_latitude = latitude
+            data_last.trip_longitude = longitude
+            data_last.trip_altitude = 0
+            data_last.last_trip_date = final_date
             data_last.count = 0
             data_last.avg_speed = 0
             data_last.avg_erpm = 0
