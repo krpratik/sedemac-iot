@@ -128,11 +128,11 @@ def new():
                 throttle_position = int(throttle_position)
                 vehicle_speed = int(vehicle_speed)
 
-                if (trip_check['trip_latitude'] == 0) :
+                if (trip_check['trip_latitude'] == 0 or latitude != 0) :
                     trip_check['trip_latitude'] = float(latitude)
                     data_last.trip_latitude  = float(latitude)
 
-                if (trip_check['trip_longitude'] == 0):
+                if (trip_check['trip_longitude'] == 0 or longitude != 0):
                     trip_check['trip_longitude'] = float(longitude)
                     data_last.trip_longitude = float(longitude)
 

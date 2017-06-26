@@ -103,6 +103,19 @@ class Last_data(object) :
 def shutdown_session(exception=None):
     db_session.remove()
 
+@app.route('/data/location')
+def location():
+  clear_mappers()
+  last_data = Table("last_data", metadata, autoload= True)
+  mapper(Last_data, last_data)
+  data= Last_data.query.all()
+  value_list= [['Lat','Long']]
+  for datas in data :
+    value_list.append([float(datas.trip_latitude), float(datas.trip_longitude)])
+  clear_mappers();
+  return jsonify(value_list)
+
+
 @app.route('/data/<int:device_id>/trip/<int:trip_id>')
 def track_path(device_id, trip_id):
   clear_mappers();
