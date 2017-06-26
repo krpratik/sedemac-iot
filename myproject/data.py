@@ -103,6 +103,7 @@ class Last_data(object) :
 def shutdown_session(exception=None):
     db_session.remove()
 
+
 @app.route('/data/location')
 def location():
   clear_mappers()
@@ -114,6 +115,29 @@ def location():
     value_list.append([float(datas.trip_latitude), float(datas.trip_longitude)])
   clear_mappers();
   return jsonify(value_list)
+
+@app.route('/data/<int:device_id>/tripdetail/<int:chart_id>')
+def trip_detail(device_id, chart_id) :
+  clear_mappers();
+  devices_derived = Table("device_derived"+str(device_id), metadata,autoload=True)
+  mapper(Device_derived, devices_derived)
+  if (chart_id == 1) :
+    data = Device_derived.query.with_entities(Device_derived.trip_duration)
+    value_list = [['trip_duration','value']]
+    for datas in data :
+      trip_duration = datetime.strptime(str(datas.trip_duration), FMT) - datetime.strptime('00:00:00', FMT)
+      value_list.append(['trip_duration', trip_duration.total_seconds()/60])
+    clear_mappers();
+    return jsonify(value_list)
+  elif (chart_id == 2) :
+    data = Device_derived.query.with_entities(Device_derived.trip_distance)
+    value_list = [['trip_distance','value']]
+    for datas in data :
+      value_list.append(['trip_distance', float(datas.trip_distance)])
+    clear_mappers();
+    return jsonify(value_list)
+  else :
+    return ("Chart not found")
 
 
 @app.route('/data/<int:device_id>/trip/<int:trip_id>')
