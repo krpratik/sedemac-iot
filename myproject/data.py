@@ -102,6 +102,27 @@ class Last_data(object) :
 def shutdown_session(exception=None):
     db_session.remove()
 
+@app.route('/data/<int:device_id>/trip/<int:trip_id>')
+def track_path(device_id, trip_id):
+  clear_mappers();
+  last_data = Table("last_data", metadata, autoload= True)
+  mapper(Last_data, last_data)
+  devices = Table("device"+str(device_id), metadata,autoload= True)
+  mapper(Device, devices)
+  if (trip_id == 0):
+    data_last = Last_data.query.filter(Last_data.device_number == int(device_id)).first();
+    data = Device.query.filter(Device.data_date >= data_last.last_trip_date);
+    value_list = [['Lat','Long']]
+    for datas in data :
+      if not ((datas.data_date == data_last.last_trip_date) and (datas.data_time < data_last.trip_start_time)):
+        value_list.append([float(datas.latitude), float(datas.longitude)])
+    clear_mappers();
+    print value_list
+    return jsonify(value_list)
+  else :
+    return ('No Such trip Found')
+
+
 #API endpoint to get or extract data from database with mentioned vehicle_id and column name 
 @app.route('/data/<int:device_id>/chart/<int:chart_id>')
 def show_all(device_id, chart_id):
@@ -138,3 +159,45 @@ def show_all(device_id, chart_id):
     #Response sent in JSON format
     return jsonify(value_list)
 
+  elif (chart_id == 3):
+    data = Device.query.all();
+    value_list = [['erpm','vehicle_speed']]
+    for datas in data :
+      value_list.append([datas.erpm, datas.vehicle_speed])
+    clear_mappers();
+    return jsonify(value_list)
+
+  elif (chart_id == 4):
+    data = Device.query.all();
+    value_list = [['erpm','throttle_position']]
+    for datas in data :
+      value_list.append([datas.erpm, datas.throttle_position])
+    clear_mappers();
+    return jsonify(value_list)
+
+  elif (chart_id == 5):
+    data = Device.query.with_entities(Device.erpm)
+    value_list = [['erpm','value']]
+    for datas in data :
+      value_list.append(['erpm', datas.erpm])
+    clear_mappers();
+    return jsonify(value_list)
+
+  elif (chart_id == 6):
+    data = Device.query.with_entities(Device.throttle_position);
+    value_list = [['throttle_position','value']]
+    for datas in data :
+      value_list.append(['throttle_position', datas.throttle_position])
+    clear_mappers();
+    return jsonify(value_list)
+
+  elif (chart_id == 7):
+    data = Device.query.with_entities(Device.engine_load);
+    value_list = [['engine_load','value']]
+    for datas in data :
+      value_list.append(['engine_load', datas.engine_load])
+    clear_mappers();
+    return jsonify(value_list)
+
+  else :
+    return ('Chart Id Not Found')
