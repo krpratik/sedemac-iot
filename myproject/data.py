@@ -13,6 +13,7 @@ from database import db_session, metadata
 from sqlalchemy import Table, Column, Integer, String
 from sqlalchemy.orm import mapper, clear_mappers
 from flask_sqlalchemy import SQLAlchemy
+from datetime import timedelta, datetime
 
 #This is the format to store all the duration and timing related paramenters like trip_duration, engine_runtime into the database
 FMT = "%H:%M:%S"
@@ -117,10 +118,115 @@ def track_path(device_id, trip_id):
       if not ((datas.data_date == data_last.last_trip_date) and (datas.data_time < data_last.trip_start_time)):
         value_list.append([float(datas.latitude), float(datas.longitude)])
     clear_mappers();
-    print value_list
     return jsonify(value_list)
   else :
     return ('No Such trip Found')
+
+@app.route('/data/<int:device_id>/details')
+def cummulative_individual_data(device_id):
+  clear_mappers();
+  cummulative_Record = Table("cummulative_record", metadata, autoload=True)
+  mapper(Cummulative_record, cummulative_Record)
+  data = Cummulative_record.query.filter(Cummulative_record.device_number == device_id).first()
+  value_list = {}
+  value_list['device_number'] = data.device_number
+  value_list['trips_number'] = data.trips_number
+  value_list['trips_avg_duration'] = str(data.trips_avg_duration)
+  value_list['trips_avg_distance'] = data.trips_avg_distance
+  value_list['trips_avg_engine_load'] = data.trips_avg_engine_load
+  value_list['trips_avg_erpm'] = data.trips_avg_erpm
+  value_list['trips_avg_throttle_position'] = data.trips_avg_throttle_position
+  value_list['trips_avg_speed'] = data.trips_avg_speed
+  value_list['avg_engine_load'] = data.avg_engine_load
+  value_list['avg_erpm'] = data.avg_erpm
+  value_list['avg_throttle_position'] = data.avg_throttle_position
+  value_list['avg_speed'] = data.avg_speed
+  value_list['trips_total_distance'] = data.trips_total_distance
+  value_list['trips_total_duration'] = str(data.trips_total_duration)
+  clear_mappers();
+  return jsonify(value_list)
+
+
+@app.route('/data/chart/<int:chart_id>')
+def cummulative_data(chart_id):
+  clear_mappers()
+  cummulative_Record = Table("cummulative_record", metadata, autoload=True)
+  mapper(Cummulative_record, cummulative_Record)
+  if (chart_id == 1) :
+    data = Cummulative_record.query.with_entities(Cummulative_record.trips_avg_duration)
+    value_list = [['trips_avg_duration','value']]
+    for datas in data :
+      trips_avg_duration = datetime.strptime(str(datas.trips_avg_duration), FMT) - datetime.strptime('00:00:00', FMT)
+      value_list.append(['trip_avg_duration', trips_avg_duration.total_seconds()])
+    clear_mappers();
+    return jsonify(value_list)
+
+  elif (chart_id == 2) :
+    data = Cummulative_record.query.with_entities(Cummulative_record.trips_avg_distance)
+    value_list = [['trips_avg_distance','value']]
+    for datas in data :
+      value_list.append(['trip_avg_distance', datas.trips_avg_distance])
+    clear_mappers();
+    return jsonify(value_list)
+
+  elif (chart_id == 3) :
+    data = Cummulative_record.query.with_entities(Cummulative_record.trips_avg_engine_load)
+    value_list = [['trips_avg_engine_load','value']]
+    for datas in data :
+      value_list.append(['trip_avg_engine_load', datas.trips_avg_engine_load])
+    clear_mappers();
+    return jsonify(value_list)
+
+  elif (chart_id == 4) :
+    data = Cummulative_record.query.with_entities(Cummulative_record.trips_avg_erpm)
+    value_list = [['trips_avg_erpm','value']]
+    for datas in data :
+      value_list.append(['trip_avg_erpm', datas.trips_avg_erpm])
+    clear_mappers();
+    return jsonify(value_list)
+
+  elif (chart_id == 5) :
+    data = Cummulative_record.query.with_entities(Cummulative_record.trips_avg_speed)
+    value_list = [['trips_avg_speed','value']]
+    for datas in data :
+      value_list.append(['trip_avg_speed', datas.trips_avg_speed])
+    clear_mappers();
+    return jsonify(value_list)
+
+  elif (chart_id == 6) :
+    data = Cummulative_record.query.with_entities(Cummulative_record.avg_engine_load)
+    value_list = [['avg_engine_load','value']]
+    for datas in data :
+      value_list.append(['avg_engine_load', datas.avg_engine_load])
+    clear_mappers();
+    return jsonify(value_list)
+
+  elif (chart_id == 7) :
+    data = Cummulative_record.query.with_entities(Cummulative_record.avg_erpm)
+    value_list = [['avg_erpm','value']]
+    for datas in data :
+      value_list.append(['avg_erpm', datas.avg_erpm])
+    clear_mappers();
+    return jsonify(value_list)
+
+  elif (chart_id == 8) :
+    data = Cummulative_record.query.with_entities(Cummulative_record.avg_throttle_position)
+    value_list = [['avg_throttle_position','value']]
+    for datas in data :
+      value_list.append(['avg_throttle_position', datas.avg_throttle_position])
+    clear_mappers();
+    return jsonify(value_list)
+
+  elif (chart_id == 9) :
+    data = Cummulative_record.query.with_entities(Cummulative_record.avg_speed)
+    value_list = [['avg_speed','value']]
+    for datas in data :
+      value_list.append(['avg_speed', datas.avg_speed])
+    clear_mappers();
+    return jsonify(value_list)
+
+  else :
+    return ("Chart not found")
 
 
 #API endpoint to get or extract data from database with mentioned vehicle_id and column name 
