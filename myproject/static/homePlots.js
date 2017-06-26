@@ -10,7 +10,6 @@ var mapAPIKey = 'AIzaSyC3kFCWlzaXmAQEdeYglMHDEFW38TTJeng';
 google.charts.load('43', { packages: ['corechart', 'map'], mapsApiKey: mapAPIKey });
 google.charts.setOnLoadCallback(plot);
 
-
 function plot() {
     $(document).ready(function() {
         document.getElementsByTagName("html")[0].style.visibility = "visible";
