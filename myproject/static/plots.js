@@ -14,7 +14,7 @@ var trip_time_data;
 
 
 var mapAPIKey = 'AIzaSyC3kFCWlzaXmAQEdeYglMHDEFW38TTJeng';
-google.charts.load('current', { packages: ['corechart', 'map'], mapsApiKey: mapAPIKey });
+google.charts.load('43', { packages: ['corechart', 'map'], mapsApiKey: mapAPIKey });
 google.charts.setOnLoadCallback(plot);
 
 function plot() {
