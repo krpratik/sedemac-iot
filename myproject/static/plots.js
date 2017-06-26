@@ -282,7 +282,7 @@ function drawTripDistanceChart() {
 
     var options = {
         legend: { position: 'none' },
-        histogram: { bucketSize: 5 },
+        histogram: { bucketSize: 1 },
         chartArea: {
             width: screen_width / 1.618,
             height: 400
