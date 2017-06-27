@@ -18,7 +18,7 @@ from datetime import timedelta, datetime
 #This is the format to store all the duration and timing related paramenters like trip_duration, engine_runtime into the database
 FMT = "%H:%M:%S"
 #Number of devices added or linked to the server as of now
-deviceNumbers = 2;
+deviceNumbers = 4;
 
 #Class definition for raw individual vehicle data
 #This class basically represents the raw data table in database
@@ -77,7 +77,8 @@ class Cummulative_record(object) :
     self.trips_total_distance = trips_total_distance
     self.trips_total_duration = trips_total_duration
 
-
+#Class definition for Last data record of devices. This table has one row for each device to store it's last data and 
+#information like running average statistics.
 class Last_data(object) :
   query = db_session.query_property()
   def __init__(self, device_number, trip_update, last_runtime_crank, last_trip_time, last_trip_date, count, avg_speed, avg_erpm, avg_engine_load, avg_throttle_position, trip_start_time, trip_latitude, trip_longitude, trip_altitude) :
@@ -103,28 +104,41 @@ class Last_data(object) :
 def shutdown_session(exception=None):
     db_session.remove()
 
+###### From Here, various Routes(API endpoints) are defined to access tables across database to get data and plot charts or analyse
 
+#This API endpoint to get the last recorded location of all the devices
 @app.route('/data/location')
 def location():
+  #Unmaps all the previous mappping between classes and tables earlier done by SQLalchemy
   clear_mappers()
   last_data = Table("last_data", metadata, autoload= True)
+  #Maps the respective mentioned class to the respective table
   mapper(Last_data, last_data)
+  #querying from the table
   data= Last_data.query.all()
+  #creating the response to be sent in the proper format required by the frontend
   value_list= [['Lat','Long']]
   for datas in data :
     value_list.append([float(datas.trip_latitude), float(datas.trip_longitude)])
+  #Mapping removed after the response is created
   clear_mappers();
+  #Created response sent
   return jsonify(value_list)
 
+#API endpoint to serve the trip-wise detail of a particular vehicle. like trip duration and trip distance
 @app.route('/data/<int:device_id>/tripdetail/<int:chart_id>')
 def trip_detail(device_id, chart_id) :
+  #Unmapping previous mapping
   clear_mappers();
   devices_derived = Table("device_derived"+str(device_id), metadata,autoload=True)
+  #Now mapping the required tables to respective classes
   mapper(Device_derived, devices_derived)
+  ##If ID == 1 we have to respond with trip_duration data and if ID == 2 we have to respond with trip_distance
   if (chart_id == 1) :
     data = Device_derived.query.with_entities(Device_derived.trip_duration)
     value_list = [['trip_duration','value']]
     for datas in data :
+      #Calculation of duration from datetime.time object
       trip_duration = datetime.strptime(str(datas.trip_duration), FMT) - datetime.strptime('00:00:00', FMT)
       value_list.append(['trip_duration', trip_duration.total_seconds()/60])
     clear_mappers();
@@ -139,7 +153,8 @@ def trip_detail(device_id, chart_id) :
   else :
     return ("Chart not found")
 
-
+#API endpoint to return the co-ordinates of the way-points through which the vehicle passed in the mentioned trip_id
+#If the passed trip_id == 0, then we return the path of the last commited trip of the mentioned vehicle
 @app.route('/data/<int:device_id>/trip/<int:trip_id>')
 def track_path(device_id, trip_id):
   clear_mappers();
@@ -159,6 +174,7 @@ def track_path(device_id, trip_id):
   else :
     return ('No Such trip Found')
 
+#API endpoint to serve cummulative detail of all the trips done so far by a particular device 
 @app.route('/data/<int:device_id>/details')
 def cummulative_individual_data(device_id):
   clear_mappers();
@@ -183,12 +199,13 @@ def cummulative_individual_data(device_id):
   clear_mappers();
   return jsonify(value_list)
 
-
+#API endpoints to retrun various cummulative parameter as denoted by chart_id. 
 @app.route('/data/chart/<int:chart_id>')
 def cummulative_data(chart_id):
   clear_mappers()
   cummulative_Record = Table("cummulative_record", metadata, autoload=True)
   mapper(Cummulative_record, cummulative_Record)
+  #chart_id == 1 returns avg_trip_duration of every vehicle. It will help us to determine the average trip duration of a general trip
   if (chart_id == 1) :
     data = Cummulative_record.query.with_entities(Cummulative_record.trips_avg_duration)
     value_list = [['trips_avg_duration','value']]
@@ -197,7 +214,7 @@ def cummulative_data(chart_id):
       value_list.append(['trip_avg_duration', trips_avg_duration.total_seconds()])
     clear_mappers();
     return jsonify(value_list)
-
+  #chart_id == 2 returns avg_trip_distance of all the registered vehicles.It will help us to determine the average trip distance of a general trip
   elif (chart_id == 2) :
     data = Cummulative_record.query.with_entities(Cummulative_record.trips_avg_distance)
     value_list = [['trips_avg_distance','value']]
@@ -205,7 +222,7 @@ def cummulative_data(chart_id):
       value_list.append(['trip_avg_distance', datas.trips_avg_distance])
     clear_mappers();
     return jsonify(value_list)
-
+  #chart_id == 3 returns average engine load of all the vehicles. It was help us to predict engine load of a general trip with significant probability
   elif (chart_id == 3) :
     data = Cummulative_record.query.with_entities(Cummulative_record.trips_avg_engine_load)
     value_list = [['trips_avg_engine_load','value']]
@@ -213,7 +230,7 @@ def cummulative_data(chart_id):
       value_list.append(['trip_avg_engine_load', datas.trips_avg_engine_load])
     clear_mappers();
     return jsonify(value_list)
-
+  #chart_id == 4 returns average engine load of all the vehicles. It will help us to predict the average erpm of a general trip with significant probability
   elif (chart_id == 4) :
     data = Cummulative_record.query.with_entities(Cummulative_record.trips_avg_erpm)
     value_list = [['trips_avg_erpm','value']]
@@ -221,7 +238,7 @@ def cummulative_data(chart_id):
       value_list.append(['trip_avg_erpm', datas.trips_avg_erpm])
     clear_mappers();
     return jsonify(value_list)
-
+  #chart_id == 5 will return average spped of all the vehicles
   elif (chart_id == 5) :
     data = Cummulative_record.query.with_entities(Cummulative_record.trips_avg_speed)
     value_list = [['trips_avg_speed','value']]
@@ -229,7 +246,7 @@ def cummulative_data(chart_id):
       value_list.append(['trip_avg_speed', datas.trips_avg_speed])
     clear_mappers();
     return jsonify(value_list)
-
+  #chart_id == 6 will return average engine load of all the vehicles
   elif (chart_id == 6) :
     data = Cummulative_record.query.with_entities(Cummulative_record.avg_engine_load)
     value_list = [['avg_engine_load','value']]
@@ -237,7 +254,7 @@ def cummulative_data(chart_id):
       value_list.append(['avg_engine_load', datas.avg_engine_load])
     clear_mappers();
     return jsonify(value_list)
-
+  #chart_id = 8 will return average erpm of all the vehicles .
   elif (chart_id == 7) :
     data = Cummulative_record.query.with_entities(Cummulative_record.avg_erpm)
     value_list = [['avg_erpm','value']]
@@ -245,7 +262,7 @@ def cummulative_data(chart_id):
       value_list.append(['avg_erpm', datas.avg_erpm])
     clear_mappers();
     return jsonify(value_list)
-
+  #chart_id == 8 will return average throttle position
   elif (chart_id == 8) :
     data = Cummulative_record.query.with_entities(Cummulative_record.avg_throttle_position)
     value_list = [['avg_throttle_position','value']]
@@ -253,7 +270,7 @@ def cummulative_data(chart_id):
       value_list.append(['avg_throttle_position', datas.avg_throttle_position])
     clear_mappers();
     return jsonify(value_list)
-
+  #chart_id == 9 will return average speed for all the vehicles
   elif (chart_id == 9) :
     data = Cummulative_record.query.with_entities(Cummulative_record.avg_speed)
     value_list = [['avg_speed','value']]
@@ -301,7 +318,7 @@ def show_all(device_id, chart_id):
     clear_mappers();
     #Response sent in JSON format
     return jsonify(value_list)
-
+  #Chart_id == 3 will return erpm and vehicle_speed data. It will be used to plot erpm vs vehicle_speed 
   elif (chart_id == 3):
     data = Device.query.all();
     value_list = [['erpm','vehicle_speed']]
@@ -309,7 +326,7 @@ def show_all(device_id, chart_id):
       value_list.append([datas.erpm, datas.vehicle_speed])
     clear_mappers();
     return jsonify(value_list)
-
+  #chart_id  == 4 returns erpm vs throttle_position data in the required format
   elif (chart_id == 4):
     data = Device.query.all();
     value_list = [['erpm','throttle_position']]
@@ -317,7 +334,7 @@ def show_all(device_id, chart_id):
       value_list.append([datas.erpm, datas.throttle_position])
     clear_mappers();
     return jsonify(value_list)
-
+  #chart_id == 5 returns raw erpm data for a particular device. It can be used to predict the erpm of vehicle at any given instant with significant probability
   elif (chart_id == 5):
     data = Device.query.with_entities(Device.erpm)
     value_list = [['erpm','value']]
@@ -325,7 +342,7 @@ def show_all(device_id, chart_id):
       value_list.append(['erpm', datas.erpm])
     clear_mappers();
     return jsonify(value_list)
-
+  #chart_id == 6 returns raw throttle_position for a particular device. Can be used for same as mentioned above
   elif (chart_id == 6):
     data = Device.query.with_entities(Device.throttle_position);
     value_list = [['throttle_position','value']]
@@ -333,7 +350,7 @@ def show_all(device_id, chart_id):
       value_list.append(['throttle_position', datas.throttle_position])
     clear_mappers();
     return jsonify(value_list)
-
+  #chart_id == 7 returns raw engine_load for a particular device. Can be used as mentioned above
   elif (chart_id == 7):
     data = Device.query.with_entities(Device.engine_load);
     value_list = [['engine_load','value']]

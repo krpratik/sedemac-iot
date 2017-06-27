@@ -114,8 +114,8 @@ function drawSpeedChart() {
 
     var data = google.visualization.arrayToDataTable(speed_data);
     var ticks = [];
-    for (var k = 0; k < data.getColumnRange(1).max / 10 + 1; k++)
-        ticks.push(k * 10);
+    for (var k = 0; k < data.getColumnRange(1).max / 20 + 1; k++)
+        ticks.push(k * 20);
 
     var options = {
         legend: { position: 'none' },

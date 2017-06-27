@@ -18,23 +18,28 @@ from datetime import timedelta, datetime
 #Few basic variable initialization to be performed.
 #Raw data is directly stored in the database. 
 #For updating the seconday table when trips end, we keep taking running average of the curremt raw data.
-#This running average is store in a a dictionary of python('trip_check_1' for device 1). 
-#Each device has it's own dictionary trip_check_devicenumnber. list_trip_check is a list which contains all the dicts as list
+#This running average is store in a table in database. The table is named as last_data as it stores the running average till the previous data.
+#After every new data this last_data is updated to accomodate the changes made by current data in the average calcualtion.
+#Each device has it's own row in the table last_data.
 
 #POST request posts all the data in a string but with comma separated vallues
 #We need to parse the string and assign parsed values to respective parameters
+
 #list of parameters to be parsed from from the POST request
-Form_list = ['table_name', 'new_data', 'data_date', 'data_time', 'latitude', 'longitude', 'engine_load', 'erpm', 'vehicle_speed', 'runtime_crank', 'throttle_position']
+#form_list = ['table_name', 'new_data', 'data_date', 'data_time', 'latitude', 'longitude', 'engine_load', 'erpm', 'vehicle_speed', 'runtime_crank', 'throttle_position']
 
 #A dictionary created from POST data with key as parameter's name for easier access of values
-Request_form ={'table_name':'', 'data_date':'', 'data_time':'', 'latitude':'', 'longitude':'', 'engine_load':'', 'erpm':'', 'vehicle_speed':'', 'runtime_crank':'', 'throttle_position':''}
+#Request_form ={'table_name':'', 'data_date':'', 'data_time':'', 'latitude':'', 'longitude':'', 'engine_load':'', 'erpm':'', 'vehicle_speed':'', 'runtime_crank':'', 'throttle_position':''}
 
 #API endpoint to process and store raw data from device installeld onto vehicle
 @app.route('/new', methods = ['POST'])
 def new():
     if request.method == 'POST' :
+        #Dictiionary to store values which are processed from the POST form data.
         request_form = {'table_name':'', 'data_date':'', 'data_time':'', 'latitude':'', 'longitude':'', 'altitude':'', 'engine_load':'', 'erpm':'', 'vehicle_speed':'', 'runtime_crank':'', 'throttle_position':''}
+        #paramenters to be stored in the last_data table
         trip_check = {'trip_update': False, 'last_runtime_crank': -1, 'last_trip_time': '00:00:00', 'last_trip_date':'2011-11-11', 'count':0, 'avg_speed':0, 'avg_erpm':0, 'avg_engine_load':0, 'avg_throttle_position':0, 'trip_start_time':0, 'trip_latitude':0, 'trip_longitude':0, 'trip_altitude':0};
+        #List of parameters which are expected to be present in the form
         form_list = ['table_name', 'new_data', 'data_date', 'data_time', 'latitude', 'longitude', 'altitude', 'engine_load', 'erpm', 'vehicle_speed', 'runtime_crank', 'throttle_position']
         #Storing the string posted via POST request method in variable
         data_string = request.form['d']
@@ -63,7 +68,9 @@ def new():
         if not(request_form['table_name'] and (request_form['data_date']) and (request_form['data_time']) and (request_form['latitude']) and (request_form['longitude'])) :
             #flash('Please enter all the fields', 'error')
             return ("Empty attempt")
+        #Checking whether the device_id is registered or not with the server
         elif (not((int(request_form['table_name']) <= 0) or (int(request_form['table_name']) > deviceNumbers))) :
+            #Extracting data from the request POST form and parsing the data in aformat which can be put in SQL database
             data_time = request_form['data_time']
             data_time_str = str(data_time)
             ms = str(int(data_time_str[-2:])*10)
@@ -84,6 +91,7 @@ def new():
             last_data = Table("last_data", metadata, autoload= True
             )
             mapper(Last_data, last_data)
+            #Extracting last_data table to accommodate the current data
             data_last = Last_data.query.filter(Last_data.device_number == table_name).first()
             trip_check['trip_update']=data_last.trip_update
             trip_check['last_runtime_crank']=data_last.last_runtime_crank
@@ -100,7 +108,7 @@ def new():
             trip_check['trip_altitude']= data_last.trip_altitude
         else :
             return ('Device not registered to database')
-
+        # If new_data == 0. It means the received data represents an ongoing previous trip. It's not the beginning of a new trip
         if (not new_data) :
             if not(request_form['altitude'] and request_form['erpm'] and request_form['vehicle_speed'] and request_form['throttle_position'] and request_form['runtime_crank'] and request_form['engine_load'] and request_form['table_name'] and (request_form['table_name']>0) ) :
                 #flash('Please enter all the fields', 'error')
@@ -113,7 +121,6 @@ def new():
                 runtime_crank = request_form['runtime_crank']
                 throttle_position = request_form['throttle_position']
                 vehicle_speed = request_form['vehicle_speed']
-                #clear_mappers();
                 devices = Table("device"+table_name, metadata,autoload= True
                 )
                 mapper(Device, devices)
@@ -144,7 +151,7 @@ def new():
                     trip_check['trip_altitude'] = float(altitude)
                     data_last.trip_altitude = float(altitude)
 
-                # if old general data
+                #Updating the last_data table for accomodating the current data 
                 data_last.last_trip_time = hh+':'+mm+':'+ss
                 data_last.count = trip_check['count']+1
                 data_last.avg_speed = float(trip_check['avg_speed'] * (trip_check['count']) + vehicle_speed) / (trip_check['count'] + 1)
@@ -152,16 +159,15 @@ def new():
                 data_last.avg_engine_load = float(trip_check['avg_engine_load'] * (trip_check['count']) + engine_load) / (trip_check['count'] + 1)
                 data_last.avg_throttle_position = float(trip_check['avg_throttle_position'] * (trip_check['count']) + throttle_position) / (trip_check['count'] + 1)
                 data_last.last_runtime_crank = runtime_crank
-
+                #Commiting the changes to the databse
                 db_session.commit()
                 clear_mappers()
         else :
+            # If new_data == 1
             if (trip_check['trip_update'] and (trip_check['last_runtime_crank'] != -1)) :
-                #clear_mappers()
-                devices_derived = Table("device_derived"+str(table_name), metadata,autoload=True
-                )
+                devices_derived = Table("device_derived"+str(table_name), metadata,autoload=True)
                 mapper(Device_derived, devices_derived)
-                #duration = datetime.strptime(trip_check['trip_start_time'], FMT) - datetime.strptime(trip_check['last_trip_time'], FMT)
+                #completing the last trip. Adding the trip committed to device_derived table
                 duration = timedelta(seconds = trip_check['last_runtime_crank'])
                 trip_duration = str(duration)
                 trip_distance = trip_check['avg_speed'] * duration.total_seconds() / 3600
@@ -178,9 +184,8 @@ def new():
 
                 device_derived = Device_derived(trip_duration, trip_distance, trip_avg_speed, trip_avg_erpm, trip_avg_engine_load, trip_avg_throttle_position, trip_date, trip_end_time, trip_start_time, trip_latitude, trip_longitude, trip_altitude)
                 db_session.add(device_derived)
-
-                cummulative_Record = Table("cummulative_record", metadata, autoload=True
-                )
+                #Updating the cummulative_record table.
+                cummulative_Record = Table("cummulative_record", metadata, autoload=True)
                 mapper(Cummulative_record, cummulative_Record)
                 data = Cummulative_record.query.filter(Cummulative_record.device_number == table_name).first()
                 trips_number = data.trips_number+1
