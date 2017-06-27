@@ -18,7 +18,7 @@ from datetime import timedelta, datetime
 #This is the format to store all the duration and timing related paramenters like trip_duration, engine_runtime into the database
 FMT = "%H:%M:%S"
 #Number of devices added or linked to the server as of now
-deviceNumbers = 4;
+deviceNumbers = 2;
 
 #Class definition for raw individual vehicle data
 #This class basically represents the raw data table in database

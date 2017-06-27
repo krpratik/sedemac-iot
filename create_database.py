@@ -12,7 +12,7 @@ metadata = MetaData(bind=engine)
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=True,
                                          bind=engine))
-deviceNumbers = 4;
+deviceNumbers = 2;
 
 if __name__=="__main__":
 
