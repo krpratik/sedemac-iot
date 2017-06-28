@@ -92,7 +92,7 @@ function drawERPMChart() {
 
     var options = {
         legend: { position: 'none' },
-        histogram: { bucketSize: 5 },
+        histogram: { bucketSize: 100 },
         chartArea: {
             width: screen_width / 1.618,
             height: 400
@@ -196,7 +196,7 @@ function drawSpeedERPMChart() {
 
     var data = google.visualization.arrayToDataTable(speed_erpm_data);
     var ticks = [];
-    for (var k = 0; k < data.getColumnRange(1).max / 1000 + 1; k++)
+    for (var k = 0; k < data.getColumnRange(0).max / 1000 + 1; k++)
         ticks.push(k * 1000);
 
     var options = {
@@ -223,7 +223,7 @@ function drawEngineLoadERPMChart() {
 
     var data = google.visualization.arrayToDataTable(engine_load_erpm_data);
     var ticks = [];
-    for (var k = 0; k < data.getColumnRange(1).max / 1000 + 1; k++)
+    for (var k = 0; k < data.getColumnRange(0).max / 1000 + 1; k++)
         ticks.push(k * 1000);
 
     var options = {
@@ -250,7 +250,7 @@ function drawThrottleERPMChart() {
 
     var data = google.visualization.arrayToDataTable(throttle_erpm_data);
     var ticks = [];
-    for (var k = 0; k < data.getColumnRange(1).max / 1000 + 1; k++)
+    for (var k = 0; k < data.getColumnRange(0).max / 1000 + 1; k++)
         ticks.push(k * 1000);
 
     var options = {

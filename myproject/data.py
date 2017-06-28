@@ -168,7 +168,10 @@ def track_path(device_id, trip_id):
     value_list = [['Lat','Long']]
     for datas in data :
       if not ((datas.data_date == data_last.last_trip_date) and (datas.data_time < data_last.trip_start_time)):
-        value_list.append([float(datas.latitude), float(datas.longitude)])
+        if not (datas.latitude == 0 or datas.longitude == 0) :
+          value_list.append([float(datas.latitude), float(datas.longitude)])
+    if not(len(value_list) > 1) :
+      value_list.append([float(data_last.trip_latitude), float(data_last.trip_longitude)])
     clear_mappers();
     return jsonify(value_list)
   else :
